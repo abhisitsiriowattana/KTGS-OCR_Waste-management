@@ -529,38 +529,47 @@
 
     // --- LIFF Login/Profile Image ---
     async function checkLiffLoginAndProfile() {
-      try {
-      await liff.init({ liffId: LIFF_ID });
+    try {
       if (!liff.isInClient()) {
-      alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
-      return false;
-        }
+        alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
+        return false;
+      }
         if (!liff.isLoggedIn()) {
         liff.login();
         return false;
-        }
-        const profile = await liff.getProfile();  
+      }
+        const profile = await liff.getProfile();
         if (profile.pictureUrl) {
         const img = document.getElementById('profileNavImg');
-        if (img && profile.pictureUrl) {
-        img.src = profile.pictureUrl;
+        if (img) {
+          img.src = profile.pictureUrl;
         }
-        document.getElementById('profileNavBtn').onclick = function() {
-        window.location.href = 'profile.html';
-        };
-        return true;
-        } catch (e) {
+        const btn = document.getElementById('profileNavBtn');
+        if (btn) {
+          btn.onclick = function () {
+            window.location.href = 'profile.html';
+          };
+        }
+         return true;
+      }
+        return false;
+    } catch (e) {
         alert("เกิดข้อผิดพลาดในการเข้าสู่ LIFF: " + e.message);
         return false;
-        }
       }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        await checkLiffLoginAndProfile(); // <-- โหลดรูป LINE + onclick profile
-        renderMainCarousel();
-        renderSectionCarousel();
-        loadProfileCard();
-      });
+    }
+      document.addEventListener("DOMContentLoaded", async function () {
+      try {
+      await liff.init({ liffId: LIFF_ID });
+      const success = await checkLiffLoginAndProfile();
+      if (!success) return
+      renderMainCarousel();
+      renderSectionCarousel();
+      loadProfileCard();
+    } catch (e) {
+      alert("ไม่สามารถเริ่มต้น LIFF ได้: " + e.message);
+    }
+  });
 
     // --- Carousel data (banner) ---
     const banners = [
@@ -629,11 +638,11 @@
 
     // --- Back-Circle-Icon --
     function handleBack() {
-       if (window.liff && liff.isInClient()) {
-        liff.closeWindow();
-        } else {
-          alert("โปรดใช้งานในแอป LINE เพื่อกลับไปหน้าหลัก");
-           }
+    if (window.liff && liff.isInClient()) {
+      liff.closeWindow();
+    } else {
+      alert("โปรดเปิดใช้งานผ่านแอป LINE เท่านั้น");
+    }
   }
 
     // --- Profile Card Data from Google Sheet ---
@@ -659,6 +668,7 @@
       const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
       const res = await fetch(url);
       const data = await res.json();
+      console.log("Fetched profile data:", data);
         if (data && data.status === "ok" && data.user) {
           const userProfile = data.user;
           document.getElementById('branchValue').innerText = userProfile.N || "-";
