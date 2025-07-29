@@ -561,7 +561,7 @@
     }
       document.addEventListener("DOMContentLoaded", async function () {
       try {
-      await liff.init({ liffId: LOGIN_LIFF_ID });
+      await liff.init({ liffId: HOME_LIFF_ID });
       const success = await checkLiffLoginAndProfile();
       if (!success) return
       renderMainCarousel();
