@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>KTGS Go Green - K-Green [Waste Data Recording]</title>
+  <title>KTGS Go Green - KT-Green [Waste Data Recording]</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://static.line-scdn.net/liff/edge/versions/2.27.0/sdk.js"></script>
@@ -264,7 +264,7 @@
     <div class="top-bar">
       <div class="top-bar-contents">
         <div class="left" id="topBarTime">--:--</div>
-        <div class="center">Welcome to "[K-Green] Waste Data Recording"</div>
+        <div class="center">Welcome to "[KT-Green] Waste Data Recording"</div>
         <div class="right">
           <button class="back-circle-btn" onclick="handleBack()">
             <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
@@ -322,22 +322,41 @@
 
     // Back button - ไปหน้า liff-home.html
     function handleBack() {
-      window.location.href = "liff-home.html";
+    if (window.liff && liff.isInClient()) {
+    liff.navigateTo({ url: 'liff-home.html' })
+      .catch(err => {
+        console.error('liff.navigateTo error:', err);
+        // fallback: ถ้า navigateTo ไม่ได้ ก็เปลี่ยนปกติ
+        window.location.href = 'liff-home.html';
+      });
+    } else {
+    // ถ้าไม่ใช่ LIFF client เปิดแบบปกติ (หรือแจ้งเตือน)
+    window.location.href = 'liff-home.html';
     }
+  }
 
     // Profile load (LIFF)
     async function loadProfile() {
-      try {
-        await liff.init({});
-        if (liff.isLoggedIn()) {
-          const profile = await liff.getProfile();
-          if (profile.pictureUrl) {
-            document.getElementById('profileImg').src = profile.pictureUrl;
-          }
-        }
-      } catch (e) {}
+    try {
+    await liff.init({ liffId: '2007721551-Bk2qDAoo' });
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
     }
-    if (window.liff) loadProfile();
+    const profile = await liff.getProfile();
+    if (profile.pictureUrl) {
+      document.getElementById('profileImg').src = profile.pictureUrl;
+    }
+  } catch (e) {
+    console.error('LIFF error:', e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+  if (window.liff) {
+    loadProfile();
+  }
+  });
 
     // Menu buttons (replace with your logic)
     document.getElementById('btnSchedule').onclick = function() {
