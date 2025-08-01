@@ -531,46 +531,46 @@
     // --- LIFF Login/Profile Image ---
     async function checkLiffLoginAndProfile() {
     try {
-      if (!liff.isInClient()) {
-        alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
-        return false;
-      }
-        if (!liff.isLoggedIn()) {
-        liff.login();
-        return false;
-      }
-        const profile = await liff.getProfile();
-        if (profile.pictureUrl) {
-        const img = document.getElementById('profileNavImg');
-        if (img) {
-          img.src = profile.pictureUrl;
-        }
-        const btn = document.getElementById('profileNavBtn');
-        if (btn) {
-          btn.onclick = function () {
-            window.location.href = 'profile.html';
-          };
-        }
-         return true;
-      }
-        return false;
-    } catch (e) {
-        alert("เกิดข้อผิดพลาดในการเข้าสู่ LIFF: " + e.message);
-        return false;
-      }
+    if (!liff.isInClient()) {
+      alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
+      return false;
     }
-      document.addEventListener("DOMContentLoaded", async function () {
-      try {
-      await liff.init({ liffId: HOME_LIFF_ID });
-      const success = await checkLiffLoginAndProfile();
-      if (!success) return
-      renderMainCarousel();
-      renderSectionCarousel();
-      loadProfileCard();
-    } catch (e) {
-      alert("ไม่สามารถเริ่มต้น LIFF ได้: " + e.message);
+    if (!liff.isLoggedIn()) {
+      // เปลี่ยนตรงนี้แทน showNeedLoginUI()
+      alert("กรุณาเข้าสู่ระบบก่อนใช้งาน");
+      liff.login(); // หรือ redirect ไปหน้า login โดยตรง
+      return false;
     }
-  });
+    const profile = await liff.getProfile();
+    if (profile.pictureUrl) {
+      const img = document.getElementById('profileNavImg');
+      if (img) img.src = profile.pictureUrl;
+    }
+    const btn = document.getElementById('profileNavBtn');
+    if (btn) {
+      btn.onclick = function () {
+        window.location.href = 'profile.html';
+      };
+    }
+    return true;
+  } catch (e) {
+    alert("เกิดข้อผิดพลาดในการเข้าสู่ LIFF: " + (e.message || e));
+    return false;
+  }
+}
+
+  document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    await liff.init({ liffId: HOME_LIFF_ID });
+    const success = await checkLiffLoginAndProfile();
+    if (!success) return;
+    renderMainCarousel();
+    renderSectionCarousel();
+    loadProfileCard();
+  } catch (e) {
+    alert("ไม่สามารถเริ่มต้น LIFF ได้: " + e.message);
+  }
+});
 
     // --- Carousel data (banner) ---
     const banners = [
@@ -655,25 +655,31 @@
     const empId = getQueryParam("empId");
     let lineUserId = getQueryParam("lineUserId");
 
-   // ถ้าไม่มี lineUserId ให้พยายามดึงจาก profile (แต่ไม่เรียก liff.login ที่นี่)
+   // ถ้าไม่ได้ผ่าน login flow (ไม่มี empId) แสดงข้อความให้ไป login แทน แล้วหยุด
+    if (!empId) {
+    console.warn("empId ไม่มีใน query string; ขอให้ผู้ใช้ไปล็อกอินก่อน");
+    // ตัวอย่าง: แสดงปุ่ม / แจ้งเตือน (ปรับ UI ตามต้องการ)
+    // ไม่รีไดเร็กต์อัตโนมัติเพราะอาจมาจาก rich menu
+    const card = document.getElementById('profileCard');
+    if (card) {
+      card.innerHTML = `<div style="color:#fff;font-weight:bold;">ยังไม่ได้เข้าสู่ระบบ<br><button style="margin-top:6px;padding:6px 12px;border:none;border-radius:8px;cursor:pointer;" onclick="window.location.href='https://liff.line.me/${LOGIN_LIFF_ID}'">เข้าสู่ระบบ</button></div>`;
+    }
+    return;
+  }
+
+   // ถ้าไม่มี lineUserId พยายามดึงจาก LIFF profile (แต่ไม่เรียก login)
     if (!lineUserId) {
     try {
       if (!liff.isLoggedIn()) {
         console.warn("ยังไม่ล็อกอิน LINE, ไม่สามารถโหลด lineUserId ได้");
-        return; // หยุด เพราะไม่มี user identity
-      }
+        return; // ไม่มี identity จะโหลดต่อไม่ได้
+    }
       const profile = await liff.getProfile();
       lineUserId = profile.userId;
     } catch (err) {
       console.error("ไม่สามารถโหลด lineUserId จาก LIFF profile:", err);
       return;
     }
-  }
-
-   // ถ้าไม่มี empId แค่หยุด (ไม่ redirect อัตโนมัติ) เพราะอาจมาจาก rich menu โดยตรง
-    if (!empId) {
-    console.warn("empId ไม่มีใน query string; ข้ามการโหลดโปรไฟล์การ์ด"); 
-    return;
   }
 
     // เรียก API ด้วยค่าที่ครบ
