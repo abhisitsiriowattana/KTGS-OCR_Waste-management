@@ -645,7 +645,7 @@
       alert("โปรดเปิดใช้งานผ่านแอป LINE เท่านั้น");
     }
   }
-
+   
     // --- Profile Card Data from Google Sheet ---
     async function loadProfileCard() {
     function getQueryParam(param) {
@@ -654,35 +654,60 @@
   }
         let empId = getQueryParam("empId");
         let lineUserId = getQueryParam("lineUserId");
-    if (!lineUserId) {
+    // ตรวจสอบ LIFF init (จะเรียกทุกครั้งแต่ safe ถ้าซ้ำ)
     try {
-    if (!liff.isInitialized) await liff.init({ liffId: LOGIN_LIFF_ID });
-    const profile = await liff.getProfile();
-    lineUserId = profile.userId;
+    await liff.init({ liffId: HOME_LIFF_ID });
   } catch (err) {
-    console.error("ไม่สามารถโหลด lineUserId:", err);
-    return;
+    console.warn("LIFF init ใน loadProfileCard ล้มเหลว (อาจ init ไปแล้ว):", err);
+  }
+   // ถ้าไม่มี lineUserId ให้ดึงจาก profile ของ LIFF (หลัง login)
+   if (!lineUserId) {
+    try {
+      if (!liff.isLoggedIn()) {
+    // ยังไม่ login จะพาไป login flow แล้วออก
+        liff.login();
+        return;
+      }
+      const profile = await liff.getProfile();
+      lineUserId = profile.userId;
+    } catch (err) {
+      console.error("ไม่สามารถโหลด lineUserId จาก LIFF profile:", err);
+      return;
     }
   }
+   // ถ้าไม่มี empId (ควรได้มาจาก query string จาก login) ให้ย้อนกลับไปหน้า login
+   if (!empId) {
+    console.warn("empId ไม่มีใน query string, กลับไปหน้า login");
+    // ถ้าต้องการเก็บ state ก่อนกลับ ให้เพิ่ม query ที่จำเป็น
+    window.location.href = `https://liff.line.me/${LOGIN_LIFF_ID}`;
+    return;
+  }
+    // เรียก API ด้วยค่าที่ถูกต้อง
       const SHEET_API = GAS_URL;
-      try {
-      const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      console.log("Fetched profile data:", data);
-        if (data && data.status === "ok" && data.user) {
-          const userProfile = data.user;
-          document.getElementById('branchValue').innerText = userProfile.N || "-";
-          document.getElementById('nameValue').innerText = ((userProfile.C||"")+(userProfile.D?" "+userProfile.D:"")) || "-";
-          document.getElementById('surnameValue').innerText = userProfile.E || "-";
-          document.getElementById('deptValue').innerText = userProfile.K || "-";
-          document.getElementById('posValue').innerText = userProfile.I || "-";
-          document.getElementById('userIdValue').innerText = userProfile.X || "-";
-          document.getElementById('actCodeValue').innerText = userProfile.O || "-";
-          document.getElementById('statusValue').innerText = userProfile.S || "-";
-        }
-      } catch (e) {}
+  try {
+    const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.warn("fetch profile card returned non-ok:", res.status);
+      return;
     }
+    const data = await res.json();
+    console.log("Fetched profile data:", data);
+    if (data && data.status === "ok" && data.user) {
+      const userProfile = data.user;
+      document.getElementById('branchValue').innerText = userProfile.N || "-";
+      document.getElementById('nameValue').innerText = ((userProfile.C||"") + (userProfile.D ? " " + userProfile.D : "")) || "-";
+      document.getElementById('surnameValue').innerText = userProfile.E || "-";
+      document.getElementById('deptValue').innerText = userProfile.K || "-";
+      document.getElementById('posValue').innerText = userProfile.I || "-";
+      document.getElementById('userIdValue').innerText = userProfile.X || "-";
+      document.getElementById('actCodeValue').innerText = userProfile.O || "-";
+      document.getElementById('statusValue').innerText = userProfile.S || "-";
+    }
+  } catch (e) {
+    console.error("เกิดข้อผิดพลาดขณะโหลด profile card:", e);
+  }
+}
   </script>
 </body>
 </html>
