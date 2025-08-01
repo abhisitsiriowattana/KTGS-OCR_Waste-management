@@ -652,21 +652,15 @@
     const url = new URL(window.location.href);
     return url.searchParams.get(param) || "";
   }
-        let empId = getQueryParam("empId");
-        let lineUserId = getQueryParam("lineUserId");
-    // ตรวจสอบ LIFF init (จะเรียกทุกครั้งแต่ safe ถ้าซ้ำ)
-    try {
-    await liff.init({ liffId: HOME_LIFF_ID });
-  } catch (err) {
-    console.warn("LIFF init ใน loadProfileCard ล้มเหลว (อาจ init ไปแล้ว):", err);
-  }
-   // ถ้าไม่มี lineUserId ให้ดึงจาก profile ของ LIFF (หลัง login)
-   if (!lineUserId) {
+    const empId = getQueryParam("empId");
+    let lineUserId = getQueryParam("lineUserId");
+
+   // ถ้าไม่มี lineUserId ให้พยายามดึงจาก profile (แต่ไม่เรียก liff.login ที่นี่)
+    if (!lineUserId) {
     try {
       if (!liff.isLoggedIn()) {
-    // ยังไม่ login จะพาไป login flow แล้วออก
-        liff.login();
-        return;
+        console.warn("ยังไม่ล็อกอิน LINE, ไม่สามารถโหลด lineUserId ได้");
+        return; // หยุด เพราะไม่มี user identity
       }
       const profile = await liff.getProfile();
       lineUserId = profile.userId;
@@ -675,17 +669,16 @@
       return;
     }
   }
-   // ถ้าไม่มี empId (ควรได้มาจาก query string จาก login) ให้ย้อนกลับไปหน้า login
-   if (!empId) {
-    console.warn("empId ไม่มีใน query string, กลับไปหน้า login");
-    // ถ้าต้องการเก็บ state ก่อนกลับ ให้เพิ่ม query ที่จำเป็น
-    window.location.href = `https://liff.line.me/${LOGIN_LIFF_ID}`;
+
+   // ถ้าไม่มี empId แค่หยุด (ไม่ redirect อัตโนมัติ) เพราะอาจมาจาก rich menu โดยตรง
+    if (!empId) {
+    console.warn("empId ไม่มีใน query string; ข้ามการโหลดโปรไฟล์การ์ด"); 
     return;
   }
-    // เรียก API ด้วยค่าที่ถูกต้อง
-      const SHEET_API = GAS_URL;
-  try {
-    const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
+
+    // เรียก API ด้วยค่าที่ครบ
+    try {
+    const url = `${GAS_URL}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
     const res = await fetch(url);
     if (!res.ok) {
       console.warn("fetch profile card returned non-ok:", res.status);
@@ -696,7 +689,7 @@
     if (data && data.status === "ok" && data.user) {
       const userProfile = data.user;
       document.getElementById('branchValue').innerText = userProfile.N || "-";
-      document.getElementById('nameValue').innerText = ((userProfile.C||"") + (userProfile.D ? " " + userProfile.D : "")) || "-";
+      document.getElementById('nameValue').innerText = ((userProfile.C || "") + (userProfile.D ? " " + userProfile.D : "")) || "-";
       document.getElementById('surnameValue').innerText = userProfile.E || "-";
       document.getElementById('deptValue').innerText = userProfile.K || "-";
       document.getElementById('posValue').innerText = userProfile.I || "-";
