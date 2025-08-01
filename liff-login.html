@@ -379,11 +379,17 @@
     }
 
     function redirectToHome(empId, lineUserId) {
-      // ถ้ามีข้อมูลล่าสุดใช้จาก argument ถ้าไม่มีก็ใช้ global
-      const emp = empId || _currentUserId || "";
-      const lineId = lineUserId || _lineUserId || "";
-      window.location.href = HOME_LIFF_URL + `?empId=${encodeURIComponent(emp)}&lineUserId=${encodeURIComponent(lineId)}`;
-    }
+  // ถ้ามีข้อมูลล่าสุดใช้จาก argument ถ้าไม่มีก็ใช้ global
+    const emp = empId || _currentUserId || "";
+    const lineId = lineUserId || _lineUserId || "";
+    if (!emp || !lineId) {
+    console.warn("ขาด empId หรือ lineUserId, ยังไม่ redirect:", emp, lineId);
+    return;
+  }
+    const target = `${HOME_LIFF_URL}?empId=${encodeURIComponent(emp)}&lineUserId=${encodeURIComponent(lineId)}`;
+    console.log("Redirecting to home:", target);
+    window.location.href = target;
+  }
 
     window.addEventListener('DOMContentLoaded', function() {
       showSpinner(false);
