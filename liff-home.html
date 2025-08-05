@@ -532,7 +532,7 @@
     async function checkLiffLoginAndProfile() {
     try {
     if (!liff.isInClient()) {
-      alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
+      alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
       return false;
     }
     if (!liff.isLoggedIn()) {
@@ -642,7 +642,7 @@
     if (window.liff && liff.isInClient()) {
       liff.closeWindow();
     } else {
-      alert("โปรดเปิดใช้งานผ่านแอป LINE เท่านั้น");
+      alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
     }
   }
    
@@ -682,31 +682,38 @@
     }
   }
 
+    // --- ฟังก์ชันช่วยตั้งค่า innerText อย่างปลอดภัย ---
+      function setTextById(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.innerText = (value || "-").toString().trim();
+  }
+
     // เรียก API ด้วยค่าที่ครบ
     try {
-    const url = `${GAS_URL}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
-    const res = await fetch(url);
-    if (!res.ok) {
+      const url = `${GAS_URL}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
+      const res = await fetch(url);
+      if (!res.ok) {
       console.warn("fetch profile card returned non-ok:", res.status);
       return;
-    }
-    const data = await res.json();
-    console.log("Fetched profile data:", data);
-    if (data && data.status === "ok" && data.user) {
+  }
+      const data = await res.json();
+      console.log("Fetched profile data:", data);
+
+      if (data && data.status === "ok" && data.user) {
       const userProfile = data.user;
-      document.getElementById('branchValue').innerText = userProfile.N || "-";
-      document.getElementById('nameValue').innerText = ((userProfile.C || "") + (userProfile.D ? " " + userProfile.D : "")) || "-";
-      document.getElementById('surnameValue').innerText = userProfile.E || "-";
-      document.getElementById('deptValue').innerText = userProfile.K || "-";
-      document.getElementById('posValue').innerText = userProfile.I || "-";
-      document.getElementById('userIdValue').innerText = userProfile.X || "-";
-      document.getElementById('actCodeValue').innerText = userProfile.O || "-";
-      document.getElementById('statusValue').innerText = userProfile.S || "-";
-    }
-  } catch (e) {
+
+      setTextById('branchValue', userProfile.N);
+      setTextById('nameValue', `${userProfile.C || ""}${userProfile.D ? " " + userProfile.D : ""}`);
+      setTextById('surnameValue', userProfile.E);
+      setTextById('deptValue', userProfile.K);
+      setTextById('posValue', userProfile.I);
+      setTextById('userIdValue', userProfile.X);
+      setTextById('actCodeValue', userProfile.O);
+      setTextById('statusValue', userProfile.S);
+  }
+    } catch (e) {
     console.error("เกิดข้อผิดพลาดขณะโหลด profile card:", e);
   }
-}
   </script>
 </body>
 </html>
