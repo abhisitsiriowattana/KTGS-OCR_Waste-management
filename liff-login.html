@@ -175,15 +175,19 @@
     async function initLiffUserId() {
     showSpinner(true);
     try {
+    console.log('เริ่มต้น liff.init');
     await liff.init({ liffId: LOGIN_LIFF_ID });
+    console.log('liff.init เสร็จแล้ว');
 
     if (!liff.isInClient()) {
       alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
       showSpinner(false);
       return;
     }
+    console.log('เปิดใน LINE client');
 
     if (!liff.isLoggedIn()) {
+      console.log('ยังไม่ได้ล็อกอิน liff.login() กำลังเรียก');
       liff.login();
       showSpinner(false);
       return;
@@ -199,7 +203,6 @@
 
     // บันทึกสถานะล็อกอินลง localStorage
     setLoggedIn();
-
     if (isLoggedIn()) {
       alert("‼️ปัจจุบันคุณได้เข้าสู่ [KT-Green] เรียบร้อยแล้วกรุณากด 🆗 และรอสักครู่ระบบจะพาคุณไปที่หน้าหลักเพื่อทำรายการในลำดับถัดไป‼️");
       setTimeout(() => {
@@ -208,14 +211,12 @@
       showSpinner(false);
       return;
     }
-
-  } catch (err) {
+    } catch (err) {
     alert("❌ LIFF error: " + (err && err.message ? err.message : JSON.stringify(err)));
-  }
-  showSpinner(false);
-  }
-
-  initLiffUserId();
+    }
+    showSpinner(false);
+    }
+    initLiffUserId();
 
     // Toggle password visibility
     document.getElementById('togglePassBtn').addEventListener('click', function() {
