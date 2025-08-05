@@ -154,51 +154,68 @@
     }
 
     // ใช้ localStorage สำหรับสถานะ login (per LINE userId)
+    let _lineUserId = "";
+    let _currentUserId = ""; // ประกาศตัวแปร global
+
     function getLoginKey() {
-      return _lineUserId ? 'liffLoginSuccess_' + _lineUserId : '';
+    return _lineUserId ? 'liffLoginSuccess_' + _lineUserId : '';
     }
+
     function isLoggedIn() {
-      const key = getLoginKey();
-      return key && localStorage.getItem(key) === '1';
+    const key = getLoginKey();
+    return key ? localStorage.getItem(key) === '1' : false;
     }
+    
     function setLoggedIn() {
-      const key = getLoginKey();
-      if (key) localStorage.setItem(key, '1');
+    const key = getLoginKey();
+    if (key) localStorage.setItem(key, '1');
     }
 
     // ===== LIFF INIT =====
     async function initLiffUserId() {
-      showSpinner(true);
-      try {
-        await liff.init({ liffId: LOGIN_LIFF_ID });
-        if (!liff.isInClient()) {
-          alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
-          showSpinner(false);
-          return;
-        }
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          showSpinner(false);
-          return;
-        }
-        const profile = await liff.getProfile();
-        _lineUserId = profile.userId || "";
-        liffReady = true;
-        document.getElementById('profileCard').innerText = profile.displayName;
-        document.getElementById('profileCard').style.display = "block";
-        // หากเคย login แล้ว (per LINE userId) ให้ alert และ redirect ออกเสมอ
-        if (isLoggedIn()) {
-          alert("‼️ปัจจุบันคุณได้เข้าสู่ [KT-Green] เรียบร้อยแล้วกรุณากด 🆗 และรอสักครู่ระบบจะพาคุณไปที่หน้าหลักเพื่อทำรายการในลำดับถัดไป‼️");
-          redirectToHome();
-          showSpinner(false);
-          return;
-        }
-      } catch (err) {
-        alert("❌ LIFF error: " + (err && err.message ? err.message : JSON.stringify(err)));
-      }
+    showSpinner(true);
+    try {
+    await liff.init({ liffId: LOGIN_LIFF_ID });
+
+    if (!liff.isInClient()) {
+      alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
       showSpinner(false);
+      return;
     }
-    initLiffUserId();
+
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      showSpinner(false);
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    _lineUserId = profile.userId || "";
+    _currentUserId = _lineUserId;
+    liffReady = true;
+
+    document.getElementById('profileCard').innerText = profile.displayName;
+    document.getElementById('profileCard').style.display = "block";
+
+    // บันทึกสถานะล็อกอินลง localStorage
+    setLoggedIn();
+
+    if (isLoggedIn()) {
+      alert("‼️ปัจจุบันคุณได้เข้าสู่ [KT-Green] เรียบร้อยแล้วกรุณากด 🆗 และรอสักครู่ระบบจะพาคุณไปที่หน้าหลักเพื่อทำรายการในลำดับถัดไป‼️");
+      setTimeout(() => {
+        redirectToHome(_currentUserId, _lineUserId);
+      }, 300);
+      showSpinner(false);
+      return;
+    }
+
+  } catch (err) {
+    alert("❌ LIFF error: " + (err && err.message ? err.message : JSON.stringify(err)));
+  }
+  showSpinner(false);
+  }
+
+  initLiffUserId();
 
     // Toggle password visibility
     document.getElementById('togglePassBtn').addEventListener('click', function() {
@@ -379,17 +396,21 @@
     }
 
     function redirectToHome(empId, lineUserId) {
-  // ถ้ามีข้อมูลล่าสุดใช้จาก argument ถ้าไม่มีก็ใช้ global
     const emp = empId || _currentUserId || "";
     const lineId = lineUserId || _lineUserId || "";
+
     if (!emp || !lineId) {
-    console.warn("ขาด empId หรือ lineUserId, ยังไม่ redirect:", emp, lineId);
+    console.warn("ยังไม่ redirect เพราะไม่มี empId หรือ lineUserId:", emp, lineId);
     return;
   }
+
     const target = `${HOME_LIFF_URL}?empId=${encodeURIComponent(emp)}&lineUserId=${encodeURIComponent(lineId)}`;
-    console.log("Redirecting to home:", target);
-    window.location.href = target;
-  }
+    console.log("Redirecting to home using liff.openWindow:", target);
+     liff.openWindow({
+      url: target,
+      external: false
+      });
+}
 
     window.addEventListener('DOMContentLoaded', function() {
       showSpinner(false);
