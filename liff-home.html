@@ -437,7 +437,7 @@
   <div class="phone-frame">
     <div class="top-bar">
       <div class="left" id="topBarTime">--:--</div>
-      <div class="center">Welcome to [KT-Green]</div>
+      <div class="center">Welcome to [KT-Green]"</div>
       <div class="right">
         <button class="back-circle-btn" onclick="handleBack()">
           <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
@@ -512,11 +512,10 @@
 
     // === CONFIG ===
     // เปลี่ยน LIFF_ID ให้เป็น LIFF ID ที่ตั้ง Endpoint URL เป็น liff-home.html บน GitHub Pages
-    const HOME_LIFF_ID = "2007678556-w9jamgJY"; // <--- ใส่ LIFF ID ของหน้า home ที่ตั้ง endpoint เป็น github
+    const LIFF_ID = "2007678556-w9jamgJY"; // <--- ใส่ LIFF ID ของหน้า home ที่ตั้ง endpoint เป็น github
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzyFGNW06_ky5ZvmKHMcGGbLbuEpxgeLdqaR1665JRKnOoksXKxNav-ez3PbNBFFt6HxA/exec";
     // เปลี่ยน LOGIN_LIFF_ID ให้เป็น LIFF ID ที่ตั้ง endpoint เป็น liff-login.html บน GitHub Pages (หรือ OA เดิม)
     const LOGIN_LIFF_ID = "2007677132-Z38g9kmn"; // <--- ใส่ LIFF ID ของหน้า login
-    const CAMERA_LIFF_ID = '2007721551-Bk2qDAoo'; // <--- ใส่ LIFF ID ของหน้า camera
 
     // --- Top bar time ---
     function updateTime() {
@@ -530,47 +529,38 @@
 
     // --- LIFF Login/Profile Image ---
     async function checkLiffLoginAndProfile() {
-    try {
-    if (!liff.isInClient()) {
-      alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
+      try {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isInClient()) {
+      alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
       return false;
-    }
-    if (!liff.isLoggedIn()) {
-      // เปลี่ยนตรงนี้แทน showNeedLoginUI()
-      alert("กรุณาเข้าสู่ระบบก่อนใช้งาน");
-      liff.login(); // หรือ redirect ไปหน้า login โดยตรง
-      return false;
-    }
-    const profile = await liff.getProfile();
-    if (profile.pictureUrl) {
-      const img = document.getElementById('profileNavImg');
-      if (img) img.src = profile.pictureUrl;
-    }
-    const btn = document.getElementById('profileNavBtn');
-    if (btn) {
-      btn.onclick = function () {
+        }
+        if (!liff.isLoggedIn()) {
+        liff.login();
+        return false;
+        }
+        const profile = await liff.getProfile();  
+        if (profile.pictureUrl) {
+        const img = document.getElementById('profileNavImg');
+        if (img && profile.pictureUrl) {
+        img.src = profile.pictureUrl;
+        }
+        document.getElementById('profileNavBtn').onclick = function() {
         window.location.href = 'profile.html';
-      };
-    }
-    return true;
-  } catch (e) {
-    alert("เกิดข้อผิดพลาดในการเข้าสู่ LIFF: " + (e.message || e));
-    return false;
-  }
-}
+        };
+        return true;
+        } catch (e) {
+        alert("เกิดข้อผิดพลาดในการเข้าสู่ LIFF: " + e.message);
+        return false;
+        }
+      }
 
-  document.addEventListener("DOMContentLoaded", async function () {
-  try {
-    await liff.init({ liffId: HOME_LIFF_ID });
-    const success = await checkLiffLoginAndProfile();
-    if (!success) return;
-    renderMainCarousel();
-    renderSectionCarousel();
-    loadProfileCard();
-  } catch (e) {
-    alert("ไม่สามารถเริ่มต้น LIFF ได้: " + e.message);
-  }
-});
+    document.addEventListener('DOMContentLoaded', async () => {
+        await checkLiffLoginAndProfile(); // <-- โหลดรูป LINE + onclick profile
+        renderMainCarousel();
+        renderSectionCarousel();
+        loadProfileCard();
+      });
 
     // --- Carousel data (banner) ---
     const banners = [
@@ -626,7 +616,7 @@
     // --- Section Carousel (single image with link) --
     const sectionBanner = {
       img: "https://i.postimg.cc/JnSnhRyM/Record-KTGS-Go-Green-2-removebg-preview.png",
-      link: "https://abhisitsiriowattana.github.io/KTGS-OCR_Waste-management/liff-camera.html"
+      link: "https://abhisitsiriowattana.github.io/KTGS_Go_Green/liff-camera.html"
     };
     function renderSectionCarousel() {
       const carouselDiv = document.getElementById('sectionCarousel');
@@ -639,81 +629,49 @@
 
     // --- Back-Circle-Icon --
     function handleBack() {
-    if (window.liff && liff.isInClient()) {
-      liff.closeWindow();
-    } else {
-      alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
-    }
+       if (window.liff && liff.isInClient()) {
+        liff.closeWindow();
+        } else {
+          alert("โปรดใช้งานในแอป LINE เพื่อกลับไปหน้าหลัก");
+           }
   }
-   
+
     // --- Profile Card Data from Google Sheet ---
     async function loadProfileCard() {
     function getQueryParam(param) {
     const url = new URL(window.location.href);
     return url.searchParams.get(param) || "";
   }
-    const empId = getQueryParam("empId");
-    let lineUserId = getQueryParam("lineUserId");
-
-   // ถ้าไม่ได้ผ่าน login flow (ไม่มี empId) แสดงข้อความให้ไป login แทน แล้วหยุด
-    if (!empId) {
-    console.warn("empId ไม่มีใน query string; ขอให้ผู้ใช้ไปล็อกอินก่อน");
-    // ตัวอย่าง: แสดงปุ่ม / แจ้งเตือน (ปรับ UI ตามต้องการ)
-    // ไม่รีไดเร็กต์อัตโนมัติเพราะอาจมาจาก rich menu
-    const card = document.getElementById('profileCard');
-    if (card) {
-      card.innerHTML = `<div style="color:#fff;font-weight:bold;">ยังไม่ได้เข้าสู่ระบบ<br><button style="margin-top:6px;padding:6px 12px;border:none;border-radius:8px;cursor:pointer;" onclick="window.location.href='https://liff.line.me/${LOGIN_LIFF_ID}'">เข้าสู่ระบบ</button></div>`;
-    }
-    return;
-  }
-
-   // ถ้าไม่มี lineUserId พยายามดึงจาก LIFF profile (แต่ไม่เรียก login)
+        let empId = getQueryParam("empId");
+        let lineUserId = getQueryParam("lineUserId");
     if (!lineUserId) {
     try {
-      if (!liff.isLoggedIn()) {
-        console.warn("ยังไม่ล็อกอิน LINE, ไม่สามารถโหลด lineUserId ได้");
-        return; // ไม่มี identity จะโหลดต่อไม่ได้
-    }
-      const profile = await liff.getProfile();
-      lineUserId = profile.userId;
-    } catch (err) {
-      console.error("ไม่สามารถโหลด lineUserId จาก LIFF profile:", err);
-      return;
+    if (!liff.isInitialized) await liff.init({ liffId: LIFF_ID });
+    const profile = await liff.getProfile();
+    lineUserId = profile.userId;
+  } catch (err) {
+    console.error("ไม่สามารถโหลด lineUserId:", err);
+    return;
     }
   }
-
-    // --- ฟังก์ชันช่วยตั้งค่า innerText อย่างปลอดภัย ---
-      function setTextById(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.innerText = (value || "-").toString().trim();
-  }
-
-    // เรียก API ด้วยค่าที่ครบ
-    try {
-      const url = `${GAS_URL}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
+      const SHEET_API = GAS_URL;
+      try {
+      const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
       const res = await fetch(url);
-      if (!res.ok) {
-      console.warn("fetch profile card returned non-ok:", res.status);
-      return;
-  }
       const data = await res.json();
-      console.log("Fetched profile data:", data);
-
-      if (data && data.status === "ok" && data.user) {
-      const userProfile = data.user;
-
-      setTextById('branchValue', userProfile.N);
-      setTextById('nameValue', `${userProfile.C || ""}${userProfile.D ? " " + userProfile.D : ""}`);
-      setTextById('surnameValue', userProfile.E);
-      setTextById('deptValue', userProfile.K);
-      setTextById('posValue', userProfile.I);
-      setTextById('userIdValue', userProfile.X);
-      setTextById('actCodeValue', userProfile.O);
-      setTextById('statusValue', userProfile.S);
-  }
-    } catch (e) {
-    console.error("เกิดข้อผิดพลาดขณะโหลด profile card:", e);
-  }
+        if (data && data.status === "ok" && data.user) {
+          const userProfile = data.user;
+          document.getElementById('branchValue').innerText = userProfile.N || "-";
+          document.getElementById('nameValue').innerText = ((userProfile.C||"")+(userProfile.D?" "+userProfile.D:"")) || "-";
+          document.getElementById('surnameValue').innerText = userProfile.E || "-";
+          document.getElementById('deptValue').innerText = userProfile.K || "-";
+          document.getElementById('posValue').innerText = userProfile.I || "-";
+          document.getElementById('userIdValue').innerText = userProfile.X || "-";
+          document.getElementById('actCodeValue').innerText = userProfile.O || "-";
+          document.getElementById('statusValue').innerText = userProfile.S || "-";
+        }
+      } catch (e) {}
+    }
   </script>
 </body>
 </html>
