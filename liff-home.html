@@ -42,54 +42,78 @@
       font-weight: 700;
       position: relative;
       display: flex;
-      box-sizing: border-box;
       min-height: 60px;
-      flex-wrap: nowrap;
-      align-items: flex-start;
+      box-sizing: border-box;
       flex-direction: column;
       justify-content: center;
     }
+    .top-bar-flex {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
     .top-bar .left {
-      flex: 1;
-      text-align: left;
-      padding-left: 35px;
-      font-size: 0.7em;
+      font-size: 0.95em;
       font-weight: 700;
       letter-spacing: 1.25px;
-      opacity: 0.85;
+      opacity: 1;
+      padding-left: 18px;
+      flex: 0 0 auto;
     }
     .top-bar .center {
-    flex: 1;
-    text-align: left;
-    padding-left: 35px;
-    font-size: 0.9em;
-    font-weight: 700;
-    letter-spacing: 3.1px;
-    opacity: 0.85;
+      flex: 1 1 auto;
+      text-align: center;
+      font-size: 1em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      opacity: 0.87;
+      padding: 0 10px;
     }
     .top-bar .right {
-    flex: 0 0 30px;
-    display: flex;
-    align-items: normal;
-    height: 100%;
-    padding-right: 14px;
-    justify-content: flex-end;
-    padding-left: 29px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 16px;
+      min-width: 60px;
+      flex: 0 0 auto;
+    }
+    .profile-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2.5px solid #e3f0ff;
+      box-shadow: 0 2px 8px #b5e2fa22;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-left: 8px;
+      cursor: pointer;
+      transition: box-shadow 0.18s;
+    }
+    .profile-circle img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
     }
     .back-circle-btn {
-    background: #5d4c4c3b;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 10px #5dc9ff33;
-    border: none;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: background 0.15s;
-    outline: none;
+      width: 40px; height: 40px;
+      background: #e3f0ff;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px #b5e2fa55;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-left: 8px;
+      outline: none;
     }
     .back-circle-btn:active {
       background: #b5e2fa;
@@ -100,13 +124,13 @@
       display: block;
     }
     .carousel {
-    margin: 18px 0 18px 0;
-    width: 100%;
-    max-width: 480px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
+      margin: 18px 0 18px 0;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
     }
     .carousel-img {
       width: 100%;
@@ -297,8 +321,6 @@
       background: #1e90ff;
       opacity: 1;
     }
-
-    /* --- NEW BOTTOM NAVIGATION --- */
     .bottom-nav {
       width: 100vw;
       max-width: 500px;
@@ -332,7 +354,6 @@
       justify-content: space-around;
       align-content: space-around;
     }
-    /* Support & Profile move to edge */
     .nav-btn.left-edge {
       align-items: flex-start;
       padding-left: 8.8px;
@@ -341,7 +362,6 @@
       align-items: flex-end;
       padding-right: 8px;
     }
-    /* Home Active: white circle above nav bar */
     .nav-btn .nav-circle {
       width: 88px;
       height: 88px;
@@ -358,7 +378,6 @@
     .nav-btn.active .nav-circle {
       display: flex;
     }
-    /* Home Active: blue circle centered in white circle */
     .nav-btn .nav-centered {
       width: 69.46px;
       height: 69.46px;
@@ -378,7 +397,6 @@
     .nav-btn.active .nav-centered {
       display: flex;
     }
-    /* Home Active: icon and label inside blue circle */
     .nav-btn.active .nav-centered .nav-icon {
       width: 38px;
       height: 38px;
@@ -399,7 +417,6 @@
       z-index: 13;
       line-height: 1.1;
     }
-    /* Inactive: icon/label below nav bar */
     .nav-btn:not(.active) .nav-icon {
       width: 40px;
       height: 35px;
@@ -436,12 +453,17 @@
 <body>
   <div class="phone-frame">
     <div class="top-bar">
-      <div class="left" id="topBarTime">--:--</div>
-      <div class="center">Welcome to [KT-Green]"</div>
-      <div class="right">
-        <button class="back-circle-btn" onclick="handleBack()">
-          <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
-        </button>
+      <div class="top-bar-flex">
+        <div class="left" id="topBarTime">--:--</div>
+        <div class="center">Welcome to [KT-Green]</div>
+        <div class="right">
+          <button class="back-circle-btn" onclick="handleBack()">
+            <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
+          </button>
+          <span class="profile-circle" id="profileCircle">
+            <img src="https://i.imgur.com/0A5nqQx.png" alt="LINE Profile" id="profileImg"/>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -475,48 +497,44 @@
   </div>
 
   <!-- Bottom Navigation -->
-    <div class="bottom-nav">
+  <div class="bottom-nav">
     <button class="nav-btn left-edge" onclick="location.href='support.html'">
-    <span class="nav-icon-bg">
-      <img class="nav-icon" src="https://i.postimg.cc/FKNMVz1P/bx-support.png" alt="Support"/>
-    </span>
-    <span class="nav-label">Support</span>
+      <span class="nav-icon-bg">
+        <img class="nav-icon" src="https://i.postimg.cc/FKNMVz1P/bx-support.png" alt="Support"/>
+      </span>
+      <span class="nav-label">Support</span>
     </button>
     <button class="nav-btn" onclick="location.href='chat.html'">
-    <span class="nav-icon-bg">
-      <img class="nav-icon" src="https://i.postimg.cc/gjssdcG0/bx-report.png" alt="Chat"/>
-    </span>
-    <span class="nav-label">Report</span>
+      <span class="nav-icon-bg">
+        <img class="nav-icon" src="https://i.postimg.cc/gjssdcG0/bx-report.png" alt="Chat"/>
+      </span>
+      <span class="nav-label">Report</span>
     </button>
     <button class="nav-btn active" onclick="window.location.href='https://liff.line.me/2007678556-w9jamgJY'">
-    <span class="nav-circle"></span>
-    <span class="nav-centered">
-      <img class="nav-icon" src="https://i.postimg.cc/fRxKNByq/Vector.png" alt="Home"/>
-      <span class="nav-label">Home</span>
-    </span>
+      <span class="nav-circle"></span>
+      <span class="nav-centered">
+        <img class="nav-icon" src="https://i.postimg.cc/fRxKNByq/Vector.png" alt="Home"/>
+        <span class="nav-label">Home</span>
+      </span>
     </button>
     <button class="nav-btn" onclick="location.href='notify.html'">
-    <span class="nav-icon-bg">
-      <img class="nav-icon" src="https://i.postimg.cc/K8BKgqgP/bx-notify.png" alt="Notify"/>
-    </span>
-    <span class="nav-label">Notify</span>
+      <span class="nav-icon-bg">
+        <img class="nav-icon" src="https://i.postimg.cc/K8BKgqgP/bx-notify.png" alt="Notify"/>
+      </span>
+      <span class="nav-label">Notify</span>
     </button>
     <button class="nav-btn right-edge" id="profileNavBtn">
-    <span class="nav-icon-bg">
-    <img id="profileNavImg" class="nav-icon profile-img-nav" src="https://i.postimg.cc/yYx2r6wF/profile-2.png" alt="Profile"/>
-    </span>
-    <span class="nav-label">Profile</span>
+      <span class="nav-icon-bg">
+        <img id="profileNavImg" class="nav-icon profile-img-nav" src="https://i.postimg.cc/yYx2r6wF/profile-2.png" alt="Profile"/>
+      </span>
+      <span class="nav-label">Profile</span>
     </button>
-    </div>
+  </div>
   <script>
-
     // === CONFIG ===
-    // เปลี่ยน LIFF_ID ให้เป็น LIFF ID ที่ตั้ง Endpoint URL เป็น liff-home.html บน GitHub Pages
-    const LIFF_ID = "2007678556-w9jamgJY"; // <--- ใส่ LIFF ID ของหน้า home ที่ตั้ง endpoint เป็น github
+    const LIFF_ID = "2007678556-w9jamgJY";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzyFGNW06_ky5ZvmKHMcGGbLbuEpxgeLdqaR1665JRKnOoksXKxNav-ez3PbNBFFt6HxA/exec";
-    // เปลี่ยน LOGIN_LIFF_ID ให้เป็น LIFF ID ที่ตั้ง endpoint เป็น liff-login.html บน GitHub Pages (หรือ OA เดิม)
-    const LOGIN_LIFF_ID = "2007677132-Z38g9kmn"; // <--- ใส่ LIFF ID ของหน้า login
-
+    const LOGIN_LIFF_ID = "2007677132-Z38g9kmn";
     // --- Top bar time ---
     function updateTime() {
       const now = new Date();
@@ -527,40 +545,44 @@
     updateTime();
     setInterval(updateTime, 10000);
 
-    // --- LIFF Login/Profile Image ---
+    // --- LIFF Login/Profile Image + Home/Profile Nav Integration ---
     async function checkLiffLoginAndProfile() {
       try {
-      await liff.init({ liffId: LIFF_ID });
-      if (!liff.isInClient()) {
-      alert("โปรดเปิดหน้านี้ผ่านแอป LINE เท่านั้น");
-      return false;
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isInClient()) {
+          // รองรับการเปิดตรงจาก Rich Menu หรือ Browser
+          if (!liff.isLoggedIn()) {
+            liff.login({ redirectUri: window.location.href });
+            return false;
+          }
+        } else if (!liff.isLoggedIn()) {
+          liff.login();
+          return false;
         }
-        if (!liff.isLoggedIn()) {
-        liff.login();
-        return false;
-        }
-        const profile = await liff.getProfile();  
+        // ดึงโปรไฟล์
+        const profile = await liff.getProfile();
         if (profile.pictureUrl) {
-        const img = document.getElementById('profileNavImg');
-        if (img && profile.pictureUrl) {
-        img.src = profile.pictureUrl;
+          document.getElementById('profileImg').src = profile.pictureUrl;
+          document.getElementById('profileNavImg').src = profile.pictureUrl;
         }
+        document.getElementById('profileCircle').onclick = function() {
+          window.location.href = 'profile.html';
+        };
         document.getElementById('profileNavBtn').onclick = function() {
-        window.location.href = 'profile.html';
+          window.location.href = 'profile.html';
         };
         return true;
-        } catch (e) {
+      } catch (e) {
         alert("เกิดข้อผิดพลาดในการเข้าสู่ LIFF: " + e.message);
         return false;
-        }
       }
-
+    }
     document.addEventListener('DOMContentLoaded', async () => {
-        await checkLiffLoginAndProfile(); // <-- โหลดรูป LINE + onclick profile
-        renderMainCarousel();
-        renderSectionCarousel();
-        loadProfileCard();
-      });
+      await checkLiffLoginAndProfile(); // โหลดรูป LINE + onclick profile
+      renderMainCarousel();
+      renderSectionCarousel();
+      loadProfileCard();
+    });
 
     // --- Carousel data (banner) ---
     const banners = [
@@ -616,12 +638,12 @@
     // --- Section Carousel (single image with link) --
     const sectionBanner = {
       img: "https://i.postimg.cc/JnSnhRyM/Record-KTGS-Go-Green-2-removebg-preview.png",
-      link: "https://abhisitsiriowattana.github.io/KTGS_Go_Green/liff-camera.html"
+      link: "liff-camera.html"
     };
     function renderSectionCarousel() {
       const carouselDiv = document.getElementById('sectionCarousel');
       carouselDiv.innerHTML = `
-        <div class="section-carousel-img" onclick="window.open('${sectionBanner.link}','_blank')">
+        <div class="section-carousel-img" onclick="window.location.href='${sectionBanner.link}'">
           <img src="${sectionBanner.img}" alt="Section"/>
         </div>
       `;
@@ -629,36 +651,36 @@
 
     // --- Back-Circle-Icon --
     function handleBack() {
-       if (window.liff && liff.isInClient()) {
+      if (window.liff && liff.isInClient && liff.isInClient()) {
         liff.closeWindow();
-        } else {
-          alert("โปรดใช้งานในแอป LINE เพื่อกลับไปหน้าหลัก");
-           }
-  }
+      } else {
+        alert("โปรดใช้งานในแอป LINE เพื่อกลับไปหน้าหลัก");
+      }
+    }
 
     // --- Profile Card Data from Google Sheet ---
     async function loadProfileCard() {
-    function getQueryParam(param) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(param) || "";
-  }
-        let empId = getQueryParam("empId");
-        let lineUserId = getQueryParam("lineUserId");
-    if (!lineUserId) {
-    try {
-    if (!liff.isInitialized) await liff.init({ liffId: LIFF_ID });
-    const profile = await liff.getProfile();
-    lineUserId = profile.userId;
-  } catch (err) {
-    console.error("ไม่สามารถโหลด lineUserId:", err);
-    return;
-    }
-  }
+      function getQueryParam(param) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(param) || "";
+      }
+      let empId = getQueryParam("empId");
+      let lineUserId = getQueryParam("lineUserId");
+      if (!lineUserId) {
+        try {
+          if (!liff.isInitialized) await liff.init({ liffId: LIFF_ID });
+          const profile = await liff.getProfile();
+          lineUserId = profile.userId;
+        } catch (err) {
+          console.error("ไม่สามารถโหลด lineUserId:", err);
+          return;
+        }
+      }
       const SHEET_API = GAS_URL;
       try {
-      const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
-      const res = await fetch(url);
-      const data = await res.json();
+        const url = `${SHEET_API}?action=getUserProfile&empId=${encodeURIComponent(empId)}&lineUserId=${encodeURIComponent(lineUserId)}`;
+        const res = await fetch(url);
+        const data = await res.json();
         if (data && data.status === "ok" && data.user) {
           const userProfile = data.user;
           document.getElementById('branchValue').innerText = userProfile.N || "-";
