@@ -137,11 +137,11 @@
   </div>
   <script>
     // ====== CONFIG ======
-    const LOGIN_LIFF_ID = "2007677132-Z38g9kmn"; // <--- ใส่ LIFF ID ของหน้า login
+    const LIFF_ID = "2007677132-Z38g9kmn";
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzyFGNW06_ky5ZvmKHMcGGbLbuEpxgeLdqaR1665JRKnOoksXKxNav-ez3PbNBFFt6HxA/exec";
     // const HOME_LIFF_URL = "https://liff.line.me/2007678556-w9jamgJY";
     const HOME_LIFF_URL = "https://liff.line.me/2007678556-w9jamgJY";
-    const CAMERA_LIFF_ID = "2007721551-Bk2qDAoo";
+
     let _lineUserId = "";
     let liffReady = false;
     let _currentUserId = "";
@@ -154,67 +154,47 @@
     }
 
     // ใช้ localStorage สำหรับสถานะ login (per LINE userId)
-    let _lineUserId = "";
-    let _currentUserId = ""; // ประกาศตัวแปร global
-
     function getLoginKey() {
-    return _lineUserId ? 'liffLoginSuccess_' + _lineUserId : '';
+      return _lineUserId ? 'liffLoginSuccess_' + _lineUserId : '';
     }
-
     function isLoggedIn() {
-    const key = getLoginKey();
-    return key ? localStorage.getItem(key) === '1' : false;
+      const key = getLoginKey();
+      return key && localStorage.getItem(key) === '1';
     }
-    
     function setLoggedIn() {
-    const key = getLoginKey();
-    if (key) localStorage.setItem(key, '1');
+      const key = getLoginKey();
+      if (key) localStorage.setItem(key, '1');
     }
 
     // ===== LIFF INIT =====
     async function initLiffUserId() {
-    showSpinner(true);
-    try {
-    console.log('เริ่มต้น liff.init');
-    await liff.init({ liffId: LOGIN_LIFF_ID });
-    console.log('liff.init เสร็จแล้ว');
-
-    if (!liff.isInClient()) {
-      alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
+      showSpinner(true);
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isInClient()) {
+          alert("❌ กรุณาเปิดผ่านแอป LINE เท่านั้น");
+          showSpinner(false);
+          return;
+        }
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          showSpinner(false);
+          return;
+        }
+        const profile = await liff.getProfile();
+        _lineUserId = profile.userId || "";
+        liffReady = true;
+        // หากเคย login แล้ว (per LINE userId) ให้ alert และ redirect ออกเสมอ
+        if (isLoggedIn()) {
+          alert("‼️ปัจจุบันคุณได้เข้าสู่ [KT-Green] เรียบร้อยแล้วกรุณากด 🆗 และรอสักครู่ระบบจะพาคุณไปที่หน้าหลักเพื่อทำรายการในลำดับถัดไป‼️");
+          redirectToHome();
+          showSpinner(false);
+          return;
+        }
+      } catch (err) {
+        alert("❌ LIFF error: " + (err && err.message ? err.message : JSON.stringify(err)));
+      }
       showSpinner(false);
-      return;
-    }
-    console.log('เปิดใน LINE client');
-
-    if (!liff.isLoggedIn()) {
-      console.log('ยังไม่ได้ล็อกอิน liff.login() กำลังเรียก');
-      liff.login();
-      showSpinner(false);
-      return;
-    }
-
-    const profile = await liff.getProfile();
-    _lineUserId = profile.userId || "";
-    _currentUserId = _lineUserId;
-    liffReady = true;
-
-    document.getElementById('profileCard').innerText = profile.displayName;
-    document.getElementById('profileCard').style.display = "block";
-
-    // บันทึกสถานะล็อกอินลง localStorage
-    setLoggedIn();
-    if (isLoggedIn()) {
-      alert("‼️ปัจจุบันคุณได้เข้าสู่ [KT-Green] เรียบร้อยแล้วกรุณากด 🆗 และรอสักครู่ระบบจะพาคุณไปที่หน้าหลักเพื่อทำรายการในลำดับถัดไป‼️");
-      setTimeout(() => {
-        redirectToHome(_currentUserId, _lineUserId);
-      }, 300);
-      showSpinner(false);
-      return;
-    }
-    } catch (err) {
-    alert("❌ LIFF error: " + (err && err.message ? err.message : JSON.stringify(err)));
-    }
-    showSpinner(false);
     }
     initLiffUserId();
 
@@ -231,16 +211,15 @@
       }
     });
 
-    document.getElementById('forgotPasswordBtn').addEventListener('click', function () {
+    document.getElementById('forgotPasswordBtn').addEventListener('click', function() {
     // แสดง alert แจ้งเตือน
-      alert('กรุณาติดต่อ IT Support เพื่อแจ้งขอรหัสผ่านใหม่');
-      if (confirm('คุณต้องการเปิดอีเมลเพื่อส่งแจ้งไปยัง IT ใช่หรือไม่?')) {
-      // ดึงชื่อพนักงานจาก <div id="profileCard">
+      alert('‼️กรุณาติดต่อ IT Support เพื่อแจ้งขอรหัสผ่านใหม่‼️');
+      if (confirm('‼️คุณต้องการเปิดอีเมลเพื่อส่งแจ้งไปยัง IT ใช่หรือไม่?‼️')) {
+    // ดึงชื่อพนักงานจาก <div id="profileCard">
       const employeeName = document.getElementById('profileCard').innerText.trim() || '[ไม่พบชื่อพนักงาน]';
-
-      // หัวเรื่องของอีเมล
+    // หัวเรื่องของอีเมล
       const subject = encodeURIComponent('[Forgot Password?] KT-Green : แจ้งเตือนอัตโนมัติเพื่อทำการช่วยหลือกรณีพนักงานผู้ใช้งานลืมรหัสผ่าน');
-      // เนื้อหาในอีเมล
+    // เนื้อหาในอีเมล
       const body = encodeURIComponent(
         `เรียน เจ้าหน้าที่ฝ่ายสารสนเทศเพื่อการบริหาร,\n\n` +
          `ข้าพเจ้า ${employeeName} ลืมรหัสผ่านหรือติดปัญหาในการเข้าใช้งานระบบ KT-Green\n` +
@@ -250,7 +229,7 @@
     // mailto: เปิดแอปเมล (Gmail/Apple Mail) บนอุปกรณ์
       const mailtoURL = `mailto:it@ktbgs.co.th?subject=${subject}&body=${body}`;
       window.location.href = mailtoURL;
-      }
+      } 
     });
 
     document.getElementById('supportBtn').addEventListener('click', function() {
@@ -261,7 +240,7 @@
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       if (!_lineUserId || !liffReady) {
-        document.getElementById('loginMsg').textContent = "กรุณาเข้าใช้งานผ่าน LINE แอป";
+        document.getElementById('loginMsg').textContent = "‼️กรุณาเข้าใช้งานผ่าน LINE แอป‼️";
         document.getElementById('loginMsg').classList.add("error");
         return;
       }
@@ -277,7 +256,7 @@
       loginMsg.textContent = "";
       loginMsg.className = "msg";
       if (!user || !password) {
-        loginMsg.textContent = "กรุณากรอก User และ Password";
+        loginMsg.textContent = "‼️กรุณากรอก User และ Password‼️";
         loginMsg.classList.add("error");
         return;
       }
@@ -293,13 +272,13 @@
         try {
           data = JSON.parse(txt);
         } catch(e) {
-          loginMsg.textContent = "เกิดข้อผิดพลาด: ระบบตอบกลับไม่ถูกต้อง";
+          loginMsg.textContent = "❌ เกิดข้อผิดพลาด: ระบบตอบกลับไม่ถูกต้อง";
           loginMsg.classList.add("error");
           showSpinner(false);
           return;
         }
         if (data.status === "ok") {
-          loginMsg.textContent = "เข้าสู่ระบบสำเร็จ";
+          loginMsg.textContent = "✅ เข้าสู่ระบบสำเร็จ";
           loginMsg.classList.add("success");
           setLoggedIn();
           if (data.user && data.user.isFirstLogin) {
@@ -313,11 +292,11 @@
             setTimeout(() => redirectToHome(user, _lineUserId), 600);
           }
         } else {
-          loginMsg.textContent = data.message || "เข้าสู่ระบบไม่สำเร็จ";
+          loginMsg.textContent = data.message || "✅ เข้าสู่ระบบไม่สำเร็จ";
           loginMsg.classList.add("error");
         }
       } catch (err) {
-        loginMsg.textContent = "เกิดข้อผิดพลาด: " + err.message;
+        loginMsg.textContent = "❌ เกิดข้อผิดพลาด: " + err.message;
         loginMsg.classList.add("error");
       }
       showSpinner(false);
@@ -332,17 +311,17 @@
       changePwdMsg.textContent = "";
       changePwdMsg.className = "msg";
       if (!oldPassword || !newPassword || !confirmPassword) {
-        changePwdMsg.textContent = "กรุณากรอกข้อมูลให้ครบ";
+        changePwdMsg.textContent = "‼️กรุณากรอกข้อมูลให้ครบ‼️";
         changePwdMsg.classList.add('error');
         return;
       }
       if (newPassword !== confirmPassword) {
-        changePwdMsg.textContent = "รหัสผ่านใหม่และยืนยันไม่ตรงกัน";
+        changePwdMsg.textContent = "❌ รหัสผ่านใหม่และยืนยันไม่ตรงกัน";
         changePwdMsg.classList.add('error');
         return;
       }
       if (!_currentUserId || !_lineUserId) {
-        changePwdMsg.textContent = "พบข้อผิดพลาด กรุณา login ใหม่";
+        changePwdMsg.textContent = "❌ พบข้อผิดพลาด กรุณา login ใหม่";
         changePwdMsg.classList.add('error');
         return;
       }
@@ -364,23 +343,23 @@
         try {
           data = JSON.parse(txt);
         } catch(e) {
-          changePwdMsg.textContent = "เกิดข้อผิดพลาด: ระบบตอบกลับไม่ถูกต้อง";
+          changePwdMsg.textContent = "❌ เกิดข้อผิดพลาด: ระบบตอบกลับไม่ถูกต้อง";
           changePwdMsg.classList.add('error');
           showSpinner(false);
           return;
         }
         if (data.status === "ok") {
-          changePwdMsg.textContent = "เปลี่ยนรหัสผ่านสำเร็จ กำลังเข้าสู่ระบบ...";
+          changePwdMsg.textContent = "✅ เปลี่ยนรหัสผ่านสำเร็จ กำลังเข้าสู่ระบบ...";
           changePwdMsg.classList.add('success');
           setLoggedIn();
           await registerLineUserToSheet(_currentUserId, _lineUserId);
           setTimeout(() => redirectToHome(_currentUserId, _lineUserId), 1200);
         } else {
-          changePwdMsg.textContent = data.message || "เปลี่ยนรหัสผ่านไม่สำเร็จ";
+          changePwdMsg.textContent = data.message || "❌ เปลี่ยนรหัสผ่านไม่สำเร็จ";
           changePwdMsg.classList.add('error');
         }
       } catch (err) {
-        changePwdMsg.textContent = "เกิดข้อผิดพลาด: " + err.message;
+        changePwdMsg.textContent = "❌ เกิดข้อผิดพลาด: " + err.message;
         changePwdMsg.classList.add('error');
       }
       showSpinner(false);
@@ -397,21 +376,11 @@
     }
 
     function redirectToHome(empId, lineUserId) {
-    const emp = empId || _currentUserId || "";
-    const lineId = lineUserId || _lineUserId || "";
-
-    if (!emp || !lineId) {
-    console.warn("ยังไม่ redirect เพราะไม่มี empId หรือ lineUserId:", emp, lineId);
-    return;
-  }
-
-    const target = `${HOME_LIFF_URL}?empId=${encodeURIComponent(emp)}&lineUserId=${encodeURIComponent(lineId)}`;
-    console.log("Redirecting to home using liff.openWindow:", target);
-     liff.openWindow({
-      url: target,
-      external: false
-      });
-}
+      // ถ้ามีข้อมูลล่าสุดใช้จาก argument ถ้าไม่มีก็ใช้ global
+      const emp = empId || _currentUserId || "";
+      const lineId = lineUserId || _lineUserId || "";
+      window.location.href = HOME_LIFF_URL + `?empId=${encodeURIComponent(emp)}&lineUserId=${encodeURIComponent(lineId)}`;
+    }
 
     window.addEventListener('DOMContentLoaded', function() {
       showSpinner(false);
