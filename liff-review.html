@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>KTGS Go Green - KT-Green [Review]</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      background: #25b8ff;
+      margin: 0; padding: 0;
+      font-family: 'Sarabun', Arial, sans-serif;
+      height: 100%;
+      min-height: 100vh;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .review-container {
+      background: #25b8ff;
+      border-radius: 32px;
+      box-shadow: 0 6px 36px #0000003a;
+      width: 98vw;
+      max-width: 380px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+      min-height: 98vh;
+      justify-content: flex-start;
+    }
+    .review-image-box {
+      width: 100%;
+      border-radius: 32px 32px 0 0;
+      overflow: hidden;
+      background: #e5f7ff;
+      position: relative;
+      aspect-ratio: 1.18/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+      max-height: 210px;
+    }
+    .review-image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 32px 32px 0 0;
+      display: block;
+    }
+    .retake-btn {
+      position: absolute;
+      left: 18px;
+      bottom: 14px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 1em;
+      border-radius: 20px;
+      padding: 5px 16px 5px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      outline: none;
+      z-index: 2;
+      transition: background 0.15s;
+    }
+    .retake-btn:hover {
+      background: #199ae6;
+    }
+    .retake-btn .icon {
+      font-size: 1.08em;
+      margin-right: 2px;
+    }
+    .review-content {
+      background: #f8f8f8;
+      border-radius: 28px;
+      width: 100%;
+      margin-top: -22px;
+      padding: 18px 15px 8px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    .review-title {
+      font-weight: 900;
+      font-size: 1.45em;
+      margin: 7px 0 19px 0;
+      color: #222;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .review-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      margin-bottom: 14px;
+      position: relative;
+      gap: 0.5em;
+    }
+    .review-label {
+      flex: 0 0 110px;
+      font-weight: 900;
+      font-size: 1.15em;
+      color: #444;
+      letter-spacing: 0.01em;
+      text-align: left;
+      min-width: 90px;
+    }
+    .review-value {
+      flex: 1 1 auto;
+      min-width: 0;
+      background: #daf1ff;
+      border-radius: 10px;
+      color: #168fcb;
+      font-size: 1.15em;
+      font-weight: bold;
+      padding: 7px 18px;
+      text-align: center;
+      margin-left: 0;
+      word-break: break-all;
+      outline: none;
+      border: none;
+      transition: background 0.13s;
+    }
+    .editable {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .edit-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      margin-left: 3px;
+      color: #777;
+      font-size: 1.16em;
+      transition: color 0.14s;
+      display: flex;
+      align-items: center;
+      outline: none;
+    }
+    .edit-btn:hover {
+      color: #25b8ff;
+    }
+    .review-row input[type="text"], .review-row input[type="number"] {
+      background: #daf1ff;
+      border: 1.5px solid #25b8ff;
+      border-radius: 10px;
+      color: #168fcb;
+      font-size: 1.15em;
+      font-weight: bold;
+      padding: 7px 18px;
+      text-align: center;
+      width: 90%;
+      outline: none;
+      margin: 0;
+    }
+    .review-row input[type="text"]:focus, .review-row input[type="number"]:focus {
+      border-color: #168fcb;
+      background: #fff;
+    }
+    .review-row .review-value[readonly] {
+      border: none;
+      background: #daf1ff;
+    }
+    .review-row .review-value:disabled {
+      color: #aaa;
+      background: #f0f0f0;
+    }
+    .divider {
+      width: 100%;
+      border-bottom: 1.5px solid #e8e8e8;
+      margin: 4px 0 12px 0;
+    }
+    .review-remark {
+      width: 100%;
+      margin-top: 0px;
+      margin-bottom: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .remark-label {
+      font-weight: 900;
+      font-size: 1.15em;
+      color: #444;
+      letter-spacing: 0.01em;
+      margin-bottom: 4px;
+    }
+    .remark-input, .remark-static {
+      width: 100%;
+      background: #daf1ff;
+      border-radius: 10px;
+      color: #168fcb;
+      font-size: 1.09em;
+      font-weight: bold;
+      padding: 7px 18px;
+      border: none;
+      outline: none;
+      margin-bottom: 0;
+      box-sizing: border-box;
+      transition: border 0.13s, background 0.13s;
+    }
+    .remark-input:focus {
+      background: #fff;
+      border: 1.5px solid #25b8ff;
+    }
+    .remark-static {
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .remark-static .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #ea466b; display: inline-block; margin-left: 7px;
+      vertical-align: middle;
+    }
+    .remark-static .dot.hide {
+      display: none;
+    }
+    .review-actions {
+      width: 100%;
+      display: flex;
+      gap: 11px;
+      margin-top: 14px;
+      margin-bottom: 10px;
+      justify-content: space-between;
+    }
+    .review-btn {
+      flex: 1 1 0;
+      font-size: 1.17em;
+      font-weight: bold;
+      padding: 14px 0;
+      border-radius: 10px;
+      outline: none;
+      border: none;
+      background: #fff;
+      color: #25b8ff;
+      box-shadow: 0 2px 8px #25b8ff22;
+      cursor: pointer;
+      transition: background 0.16s, color 0.13s;
+      margin: 0;
+      min-width: 0;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .review-btn:active, .review-btn:hover {
+      background: #e5f7ff;
+      color: #168fcb;
+    }
+    .review-btn.primary {
+      background: #25b8ff;
+      color: #fff;
+    }
+    .review-btn.primary:active, .review-btn.primary:hover {
+      background: #168fcb;
+      color: #fff;
+    }
+    .review-btn.primary[disabled] {
+      background: #e0e0e0;
+      color: #b4b4b4;
+      cursor: not-allowed;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    @media (max-width: 480px) {
+      .review-container { max-width: 99vw; }
+      .review-image-box { min-height: 120px; }
+      .review-row, .remark-input, .remark-static { font-size: 1em; }
+      .review-btn { font-size: 1em; padding: 11px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="review-container">
+    <div class="review-image-box">
+      <img id="reviewImg" src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Waste">
+      <button class="retake-btn" id="retakeBtn"><span class="icon">Retake</span>📷</button>
+    </div>
+    <div class="review-content">
+      <div class="review-title">Summary</div>
+      <div class="review-row">
+        <span class="review-label">Weight (kg)</span>
+        <span class="editable" style="flex:1;">
+          <input class="review-value" type="number" step="0.01" id="weightValue" readonly value="10.4"/>
+          <button class="edit-btn" id="editWeightBtn" title="Edit"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="#999" stroke-width="1.5"/><path d="M8.51 15.568l.732-3.408 5.03-5.03a1.03 1.03 0 0 1 1.457 0l1.219 1.22a1.03 1.03 0 0 1 0 1.456l-5.03 5.03-3.408.732z" stroke="#999" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </span>
+      </div>
+      <div class="review-row">
+        <span class="review-label">Category</span>
+        <span class="review-value" id="categoryValue">Recyclable</span>
+      </div>
+      <div class="review-row">
+        <span class="review-label">Branch</span>
+        <span class="review-value" id="branchValue">Sukhumvit</span>
+      </div>
+      <div class="review-row">
+        <span class="review-label">Date</span>
+        <span class="review-value" id="dateValue">01/6/2025</span>
+      </div>
+      <div class="review-row">
+        <span class="review-label">Time</span>
+        <span class="review-value" id="timeValue">23:59:50</span>
+      </div>
+      <div class="divider"></div>
+      <div class="review-remark">
+        <span class="remark-label">Remark</span>
+        <span class="remark-static" id="remarkStatic">
+          <span id="remarkValue">Notification</span>
+          <span class="dot" id="remarkDot"></span>
+        </span>
+        <input class="remark-input" id="remarkInput" type="text" style="display:none;" maxlength="100"/>
+      </div>
+      <div class="review-actions">
+        <button class="review-btn" id="backBtn">Back</button>
+        <button class="review-btn primary" id="recordBtn">Record</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // ------ Configuration ------
+    const SHEET_ID = '1TEvqOkLMHOPiJRY4gMjlCI4Hetf3wixa9GyssDB0u6M';
+    const ID_SHEET = 'IDworksheet';
+    const DATA_SHEET = 'data';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzyFGNW06_ky5ZvmKHMcGGbLbuEpxgeLdqaR1665JRKnOoksXKxNav-ez3PbNBFFt6HxA/exec'; // Replace with your GAS endpoint
+    const DRIVE_FOLDER_ID = '1WcFtoXY_9p25XyVx15LRf48fDndvTEWN';
+
+    // ------ Data Model ------
+    let reviewData = {
+      image: "", // base64 or blob url
+      imageFile: null, // File object
+      weight: "10.4",
+      category: "Recyclable",
+      branch: "Sukhumvit",
+      date: "01/6/2025",
+      time: "23:59:50",
+      remark: "Notification",
+      remarkError: "",
+      userId: "",
+      empInfo: null, // employee info object
+    };
+
+    // ------ Utilities ------
+    function hasErrorRemark(errorMsg) {
+      if (!errorMsg) return false;
+      const keywords = [
+        "❌ตรวจสอบพบการถ่ายภาพมัว‼️", "❌ตรวจสอบพบการถ่ายภาพไม่ชัด‼️", "❌ตรวจสอบพบการสั่นของภาพถ่าย‼️", "❌ตรวจสอบพบภาพซ้ำจากการบันทึกก่อนหน้านี้‼️", "❌blur‼️", "❌duplicate‼️", "❌shake‼️", "❌not clear‼️"
+      ];
+      return keywords.some(k => errorMsg.toLowerCase().includes(k));
+    }
+    function getQueryParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name) || "";
+    }
+
+    // ------ Page Data Populate ------
+    function populateReview() {
+      // รับค่าจาก query string
+      if (getQueryParam('weight')) reviewData.weight = getQueryParam('weight');
+      if (getQueryParam('category')) reviewData.category = getQueryParam('category');
+      if (getQueryParam('branch')) reviewData.branch = getQueryParam('branch');
+      if (getQueryParam('date')) reviewData.date = getQueryParam('date');
+      if (getQueryParam('time')) reviewData.time = getQueryParam('time');
+      if (getQueryParam('remark')) reviewData.remark = getQueryParam('remark');
+      if (getQueryParam('remarkError')) reviewData.remarkError = getQueryParam('remarkError');
+      if (getQueryParam('img')) {
+        document.getElementById('reviewImg').src = getQueryParam('img');
+        reviewData.image = getQueryParam('img');
+      }
+      if (getQueryParam('imgFile')) {
+        // for advanced cases, could parse file info here
+      }
+      // ---- แก้ไข category ให้ตรงเมนูที่กด ----
+      const cat = getQueryParam('category');
+      let catDisplay = "Recyclable";
+      if (cat) {
+        switch (cat) {
+          case "food": catDisplay = "Food Waste"; break;
+          case "recycle": catDisplay = "Recyclable"; break;
+          case "garbage": catDisplay = "Garbage"; break;
+          case "hazard": catDisplay = "Hazardous Waste"; break;
+          default: catDisplay = cat;
+        }
+        reviewData.category = catDisplay;
+      }
+      document.getElementById('categoryValue').textContent = reviewData.category;
+
+      document.getElementById('weightValue').value = reviewData.weight;
+      document.getElementById('branchValue').textContent = reviewData.branch;
+      document.getElementById('dateValue').textContent = reviewData.date;
+      document.getElementById('timeValue').textContent = reviewData.time;
+
+      // Remark logic
+      let showDot = false;
+      let remarkMsg = "";
+      let blockRecord = false;
+      if (reviewData.remarkError && hasErrorRemark(reviewData.remarkError)) {
+        remarkMsg = reviewData.remarkError;
+        showDot = true;
+        blockRecord = true;
+      } else {
+        remarkMsg = reviewData.remark;
+        showDot = false;
+        blockRecord = false;
+      }
+      document.getElementById('remarkValue').textContent = remarkMsg;
+      document.getElementById('remarkDot').className = "dot" + (showDot ? "" : " hide");
+      document.getElementById('recordBtn').disabled = blockRecord;
+    }
+
+    // ------ EMPLOYEE DATA ------
+    async function getEmpInfo() {
+      // Find userId (from LIFF or query param)
+      let lineUserId = getQueryParam('lineUserId') || "";
+      if (!lineUserId && window.liff) {
+        try {
+          if (!liff.isInitialized) await liff.init();
+          const profile = await liff.getProfile();
+          lineUserId = profile.userId;
+        } catch (err) {}
+      }
+      reviewData.userId = lineUserId;
+
+      // Query GAS API to get employee info (IDworksheet)
+      if (!lineUserId) return null;
+      try {
+        const url = `${GAS_URL}?action=getUserProfile&lineUserId=${encodeURIComponent(lineUserId)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data.status === "ok" && data.user) {
+          reviewData.empInfo = data.user;
+          return data.user;
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    // ------ IMAGE UPLOAD ------
+    async function uploadImageToDrive(base64Data) {
+      // Call GAS to upload base64 to Drive folder, get URL
+      // You must have a deployed GAS endpoint to handle this
+      try {
+        const payload = {
+          action: "uploadImage",
+          folderId: DRIVE_FOLDER_ID,
+          imageData: base64Data
+        };
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data && data.status === "ok" && data.url) return data.url;
+      } catch (e) {}
+      return "";
+    }
+
+    // ------ DATA SUBMIT ------
+    async function handleRecord() {
+      // 1. Get Employee Data
+      let empInfo = reviewData.empInfo;
+      if (!empInfo) empInfo = await getEmpInfo();
+
+      // 2. Upload image and get the url
+      let imageUrl = "";
+      if (reviewData.image && reviewData.image.startsWith("data:")) {
+        imageUrl = await uploadImageToDrive(reviewData.image);
+      } else if (reviewData.image) {
+        imageUrl = reviewData.image;
+      }
+
+      // 3. Prepare data for the row (order as in your Sheet)
+      const dataRow = {
+        empId: empInfo?.X || "",  // เลขประจำตัว
+        prefix: empInfo?.B || "", // คำนำหน้าชื่อสามัญ
+        name: empInfo?.C || "",   // ชื่อ
+        surname: empInfo?.E || "",// นามสกุล
+        position: empInfo?.I || "", // ตำแหน่งปัจจุบัน
+        orgCode: empInfo?.F || "", // รหัสหน่วยงานสังกัด
+        org: empInfo?.K || "",     // หน่วยงานสังกัด
+        mainOrg: empInfo?.M || "", // หน่วยงานหลัก
+        workOrg: empInfo?.L || "", // หน่วยงานที่ปฏิบัติงาน
+        activityCode: empInfo?.O || "", // รหัสกิจกรรม
+        activityName: empInfo?.P || "", // ชื่อกิจกรรม
+        place: empInfo?.Q || "",        // ชื่อสถานที่ปฏิบัติงาน
+        weight: reviewData.weight || "",
+        category: reviewData.category || "",
+        branch: reviewData.branch || "",
+        date: reviewData.date || "",
+        time: reviewData.time || "",
+        imageUrl: imageUrl
+      };
+
+      // 4. ส่งข้อมูลไปบันทึกที่ Sheet (data)
+      try {
+        const payload = {
+          action: "appendRow",
+          sheetId: SHEET_ID,
+          sheetName: DATA_SHEET,
+          data: dataRow
+        };
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (result && result.status === "ok") {
+          alert("✅ทำการบันทึกข้อมูล 🗑️ สำเร็จ✅");
+          window.location.href = "liff-home.html";
+        } else {
+          alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        }
+      } catch (e) {
+        alert("เกิดข้อผิดพลาดขณะส่งข้อมูล");
+      }
+    }
+
+    // ------ Inline Edit Weight ------
+    document.getElementById('editWeightBtn').onclick = function() {
+      const input = document.getElementById('weightValue');
+      input.readOnly = false;
+      input.focus();
+      input.select();
+      input.style.background = "#fff";
+      input.style.border = "1.5px solid #25b8ff";
+      input.addEventListener('blur', function restore() {
+        input.readOnly = true;
+        input.style.background = "#daf1ff";
+        input.style.border = "none";
+        input.removeEventListener('blur', restore);
+        reviewData.weight = input.value;
+      });
+    };
+
+    // ------ Inline Edit Remark ------
+    document.getElementById('remarkStatic').onclick = function() {
+      document.getElementById('remarkStatic').style.display = 'none';
+      const input = document.getElementById('remarkInput');
+      input.style.display = 'block';
+      input.value = reviewData.remarkError || reviewData.remark;
+      input.focus();
+      input.select();
+      input.onblur = function() {
+        input.style.display = 'none';
+        reviewData.remark = input.value || "Notification";
+        let showDot = hasErrorRemark(reviewData.remark);
+        document.getElementById('remarkValue').textContent = reviewData.remark;
+        document.getElementById('remarkDot').className = "dot" + (showDot ? "" : " hide");
+        document.getElementById('remarkStatic').style.display = '';
+        document.getElementById('recordBtn').disabled = showDot;
+      };
+      input.onkeydown = function(e) {
+        if (e.key === 'Enter') {
+          input.blur();
+        }
+      };
+    };
+
+    // ------ Retake Button ------
+    document.getElementById('retakeBtn').onclick = function() {
+      window.location.href = "liff-camera.html";
+    };
+
+    // ------ Back Button ------
+    document.getElementById('backBtn').onclick = function() {
+      window.location.href = "liff-camera.html";
+    };
+
+    // ------ Record Button ------
+    document.getElementById('recordBtn').onclick = async function() {
+      document.getElementById('recordBtn').disabled = true;
+      await handleRecord();
+      document.getElementById('recordBtn').disabled = false;
+    };
+
+    // ------ Init ------
+    (async function(){
+      // Try to get emp info in advance for speed
+      await getEmpInfo();
+      populateReview();
+    })();
+  </script>
+</body>
+</html>
