@@ -291,12 +291,14 @@
       justify-content: flex-start;
     }
     .waste-img {
-      width: 44vw; max-width: 255px; min-width: 120px;
-      height: 120px; object-fit: cover;
+      width: 44vw;
+      max-width: 255px;
+      min-width: 120px;
+      height: 120px;
+      object-fit: cover;
       margin: 0;
       box-shadow: 0 2px 8px #b5e2fa22;
       border: none;
-      border-radius: 0 22px 22px 0;
     }
     .waste-card.img-left .waste-img {
       border-radius: 22px 0 0 22px;
@@ -311,8 +313,8 @@
       justify-content: center;
       background: #fff;
       color: #222;
-      border-radius: 22px 0 0 22px;
-      height: 100%;
+      font-size: xx-large;
+      font-weight: 900;
       padding: 0 14px;
       text-align: center;
       box-sizing: border-box;
@@ -427,18 +429,31 @@
     setInterval(updateTime, 30000);
 
     // Back button - ไปหน้า liff-home.html
-    function handleBack() {
+    async function handleBack() {
+    try {
+    if (window.liff && typeof liff.init === "function" && !liff.isInitialized) {
+      await liff.init();
+    }
     if (window.liff && liff.isInClient()) {
-    liff.navigateTo({ url: 'liff-home.html' })
-      .catch(err => {
+      liff.navigateTo({ url: 'liff-home.html' }).catch(err => {
         console.error('liff.navigateTo error:', err);
-        // fallback: ถ้า navigateTo ไม่ได้ ก็เปลี่ยนปกติ
         window.location.href = 'liff-home.html';
       });
     } else {
-    // ถ้าไม่ใช่ LIFF client เปิดแบบปกติ (หรือแจ้งเตือน)
+      window.location.href = 'liff-home.html';
+    }
+    } catch (e) {
     window.location.href = 'liff-home.html';
     }
+  }
+
+  // Close button - ออกจาก liff-camera.html
+  function handleClose() {
+  if (window.liff && liff.isInClient && liff.isInClient()) {
+    liff.closeWindow();
+  } else {
+    alert("กรุณาเปิดผ่านแอป LINE เพื่อปิดหน้าต่าง");
+  }
   }
 
     // Profile load (LIFF)
