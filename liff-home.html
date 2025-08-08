@@ -697,6 +697,14 @@
       }
     }
 
+    // Close button - ออกจาก liff-camera.html
+  function handleClose() {
+    if (window.liff && liff.isInClient && liff.isInClient()) {
+    liff.closeWindow();
+    } else {
+    alert("กรุณาเปิดผ่านแอป LINE เพื่อปิดหน้าต่าง");
+  }
+
     // --- Profile Card Data from Google Sheet ---
     async function loadProfileCard() {
       function getQueryParam(param) {
