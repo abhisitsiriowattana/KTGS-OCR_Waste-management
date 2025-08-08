@@ -31,55 +31,159 @@
       align-items: center;
     }
     .top-bar {
-      width: 100%;
-      background: #5dc9ff;
-      color: #fff;
-      padding: 8px 0 10px 0;
-      text-align: center;
-      font-size: 1.15em;
-      font-weight: 700;
-      position: relative;
-      display: flex;
-      min-height: 60px;
-      box-sizing: border-box;
-      flex-wrap: nowrap;
-      align-items: flex-start;
-      flex-direction: column;
-      justify-content: center;
+    width: 100%;
+    background: #5dc9ff;
+    color: #fff;
+    padding: 8px 0 10px 0;
+    text-align: center;
+    font-size: 1.15em;
+    font-weight: 700;
+    position: relative;
+    display: flex;
+    min-height: 60px;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
     }
-    .top-bar-contents {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      margin-top: 3px;
-      margin-bottom: 3px;
+    .top-bar-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px;
+    margin-bottom: 2px;
+    }
+  
+  /* Top row */
+    .top-bar-row.top {
+    justify-content: space-between;
+    margin-bottom: 0;
     }
     .top-bar .left {
-      font-size: 0.95em;
-      font-weight: 700;
-      letter-spacing: 1.25px;
-      opacity: 1;
-      padding-left: 18px;
-      flex: 0 0 auto;
-    }
-    .top-bar .center {
-      flex: 1 1 auto;
-      text-align: center;
-      font-size: 1em;
-      font-weight: 700;
-      letter-spacing: 2px;
-      opacity: 0.87;
-      padding: 0 10px;
+    font-size: 0.95em;
+    font-weight: 700;
+    letter-spacing: 1.25px;
+    opacity: 1;
+    padding-left: 18px;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
     }
     .top-bar .right {
+    display: flex;
+    align-items: center;
+    padding-right: 16px;
+    min-width: 44px;
+    flex: 0 0 auto;
+    }
+
+  /* Center row (title/message) */
+    .top-bar-row.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 2px;
+    }
+    .top-bar .center {
+    flex: 1 1 auto;
+    text-align: center;
+    font-size: 1em;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0.87;
+    padding: 0 10px;
+    width: 100%;
+    }
+
+  /* Bottom row: back left, close right */
+    .top-bar-row.bottom {
+    justify-content: space-between;
+    margin-bottom: 0;
+    }
+    .top-bar .bottom-left {
+    display: flex;
+    align-items: center;
+    padding-left: 18px;
+    }
+    .top-bar .bottom-right {
+    display: flex;
+    align-items: center;
+    padding-right: 16px;
+    }
+    .back-circle-btn, .close-circle-btn {
+    width: 38px;
+    height: 38px;
+    background: #e3f0ff;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px #b5e2fa55;
+    cursor: pointer;
+    transition: background 0.18s;
+    margin-left: 0;
+    margin-right: 0;
+    }
+    .back-circle-btn img, .close-circle-btn img {
+    width: 20px;
+    height: 20px;
+    }
+    .carousel {
+      margin: 18px 0 18px 0;
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .carousel-img {
+      width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px #b5e2fa33;
+      overflow: hidden;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-right: 16px;
-      min-width: 60px;
-      flex: 0 0 auto;
+      height: 220px;
+      cursor: pointer;
+      position: relative;
+      background: #d7eefd;
+    }
+    .carousel-img img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 18px;
+      background: #e7f7ff;
+      transition: filter 0.15s;
+      display: block;
+    }
+    .carousel-dots {
+      margin: 2px 0 0 0;
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+    }
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      background: #b5e2fa;
+      border-radius: 50%;
+      display: inline-block;
+      opacity: 0.7;
+      transition: background 0.2s;
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+    .carousel-dot.active {
+      background: #1e90ff;
+      opacity: 1;
     }
     .profile-circle {
       width: 44px;
@@ -166,7 +270,7 @@
       border-radius: 22px;
       box-shadow: 0 8px 32px #3572b213;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       margin-bottom: 18px;
       overflow: hidden;
       width: 98%;
@@ -187,7 +291,7 @@
       justify-content: flex-start;
     }
     .waste-img {
-      width: 44vw; max-width: 180px; min-width: 120px;
+      width: 44vw; max-width: 255px; min-width: 120px;
       height: 120px; object-fit: cover;
       margin: 0;
       box-shadow: 0 2px 8px #b5e2fa22;
@@ -201,54 +305,45 @@
       border-radius: 0 22px 22px 0;
     }
     .waste-label {
-      flex: 1;
-      font-size: 1.35em;
-      font-weight: bold;
-      color: #222;
-      letter-spacing: 1px;
+      flex: 1 1 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 22px 0 0 22px;
       background: #fff;
+      color: #222;
+      border-radius: 22px 0 0 22px;
       height: 100%;
-      min-width: 130px;
-      transition: background 0.18s, color 0.18s;
       padding: 0 14px;
       text-align: center;
+      box-sizing: border-box;
+      transition: background 0.18s, color 0.18s;
     }
     .waste-card.img-right .waste-label {
       border-radius: 22px 0 0 22px;
-      padding-left: 0;
-      padding-right: 14px;
-      justify-content: center;
     }
     .waste-card.img-left .waste-label {
       border-radius: 0 22px 22px 0;
-      padding-left: 14px;
-      padding-right: 0;
-      justify-content: center;
     }
     /* Hover/Active styles - full background fill */
     .waste-card.img-right .waste-label.green-hover:hover,
     .waste-card.img-right .waste-label.green-hover:active {
-      background: #168f32 !important;
-      color: #fff;
+    background: #168f32 !important;
+    color: #fff;
     }
     .waste-card.img-left .waste-label.yellow-hover:hover,
     .waste-card.img-left .waste-label.yellow-hover:active {
-      background: #f7a600 !important;
-      color: #fff;
+    background: #f7a600 !important;
+    color: #fff;
     }
     .waste-card.img-right .waste-label.blue-hover:hover,
     .waste-card.img-right .waste-label.blue-hover:active {
-      background: #1e3b8e !important;
-      color: #fff;
+    background: #1e3b8e !important;
+    color: #fff;
     }
     .waste-card.img-left .waste-label.red-hover:hover,
     .waste-card.img-left .waste-label.red-hover:active {
-      background: #c20016 !important;
-      color: #fff;
+    background: #c20016 !important;
+    color: #fff;
     }
     @media (max-width: 480px) {
       .phone-frame { max-width: 99vw;}
@@ -262,19 +357,30 @@
 <body>
   <div class="phone-frame">
     <div class="top-bar">
-      <div class="top-bar-contents">
+      <div class="top-bar-row top">
         <div class="left" id="topBarTime">--:--</div>
-        <div class="center">Welcome to "[KT-Green] Waste Data Recording"</div>
         <div class="right">
-          <button class="back-circle-btn" onclick="handleBack()">
-            <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
-          </button>
           <span class="profile-circle" id="profileCircle">
-            <img src="https://i.imgur.com/0A5nqQx.png" alt="LINE Profile" id="profileImg"/>
+            <img src="..." alt="LINE Profile" id="profileImg"/>
           </span>
         </div>
       </div>
-    </div>
+        <div class="top-bar-row center">
+       <div class="center">Welcome to [KT-Green]<br>"Waste Data Recording"</div>
+       </div>
+        <div class="top-bar-row bottom">
+          <div class="bottom-left">
+            <button class="back-circle-btn" onclick="handleBack()">
+              <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
+            </button>
+        </div>
+          <div class="bottom-right">
+            <button class="close-circle-btn" onclick="handleClose()">
+              <img src="https://i.postimg.cc/268jskDW/Frame-9-1.png" alt="Close" />
+            </button>
+          </div>
+        </div>
+      </div>
     <div class="main-menu">
       <button class="main-menu-btn" id="btnTips">
         <span class="icon">💡</span>
@@ -291,22 +397,22 @@
     </div>
     <!-- Food Waste - Image right, Label left -->
     <div class="waste-card img-right" id="cardFood">
-      <img class="waste-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Food Waste">
+      <img class="waste-img" src="https://i.postimg.cc/Rh8MJyDb/b91866f45c3ed3b664d7612b3e541ce479f46302.jpg" alt="Food Waste">
       <span class="waste-label green-hover">Food<br>Waste</span>
     </div>
     <!-- Recyclable - Image left, Label right -->
     <div class="waste-card img-left" id="cardRecycle">
-      <img class="waste-img" src="https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80" alt="Recyclable">
+      <img class="waste-img" src="https://i.postimg.cc/5tHD6jV1/86104ba00143caf8c75e7e00a20ad007d0916879.jpg" alt="Recyclable">
       <span class="waste-label yellow-hover">Recyclable</span>
     </div>
     <!-- Garbage - Image right, Label left -->
     <div class="waste-card img-right" id="cardGarbage">
-      <img class="waste-img" src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Garbage">
+      <img class="waste-img" src="https://i.postimg.cc/J73vy99y/025cc96c74dcd107980ba264466058daee8eb932.jpg" alt="Garbage">
       <span class="waste-label blue-hover">Garbage</span>
     </div>
     <!-- Hazardous Waste - Image left, Label right -->
     <div class="waste-card img-left" id="cardHazardous">
-      <img class="waste-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Hazardous Waste">
+      <img class="waste-img" src="https://i.postimg.cc/zBrp8fDx/d9a3aab1ae3ec3444cd53d629f00922debf36e76.jpg" alt="Hazardous Waste">
       <span class="waste-label red-hover">Hazardous<br>Waste</span>
     </div>
   </div>
