@@ -33,95 +33,124 @@
       align-items: center;
     }
     .top-bar {
-      width: 100%;
-      background: #5dc9ff;
-      color: #fff;
-      padding: 8px 0 10px 0;
-      text-align: center;
-      font-size: 1.15em;
-      font-weight: 700;
-      position: relative;
-      display: flex;
-      min-height: 60px;
-      box-sizing: border-box;
-      flex-direction: column;
-      justify-content: center;
+    width: 100%;
+    background: #5dc9ff;
+    color: #fff;
+    padding: 8px 0 10px 0;
+    text-align: center;
+    font-size: 1.15em;
+    font-weight: 700;
+    position: relative;
+    display: flex;
+    min-height: 60px;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
     }
-    .top-bar-flex {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+    .top-bar-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px;
+    margin-bottom: 2px;
+    }
+
+  /* Top row */
+    .top-bar-row.top {
+    justify-content: space-between;
+    margin-bottom: 0;
     }
     .top-bar .left {
-      font-size: 0.95em;
-      font-weight: 700;
-      letter-spacing: 1.25px;
-      opacity: 1;
-      padding-left: 18px;
-      flex: 0 0 auto;
-    }
-    .top-bar .center {
-      flex: 1 1 auto;
-      text-align: center;
-      font-size: 1em;
-      font-weight: 700;
-      letter-spacing: 2px;
-      opacity: 0.87;
-      padding: 0 10px;
+    font-size: 0.95em;
+    font-weight: 700;
+    letter-spacing: 1.25px;
+    opacity: 1;
+    padding-left: 18px;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
     }
     .top-bar .right {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-right: 16px;
-      min-width: 60px;
-      flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    padding-right: 16px;
+    min-width: 44px;
+    flex: 0 0 auto;
     }
     .profile-circle {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #fff;
-      border: 2.5px solid #e3f0ff;
-      box-shadow: 0 2px 8px #b5e2fa22;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      margin-left: 8px;
-      cursor: pointer;
-      transition: box-shadow 0.18s;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2.5px solid #e3f0ff;
+    box-shadow: 0 2px 8px #b5e2fa22;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: box-shadow 0.18s;
     }
     .profile-circle img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
     }
-    .back-circle-btn {
-      width: 40px; height: 40px;
-      background: #e3f0ff;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px #b5e2fa55;
-      cursor: pointer;
-      transition: background 0.15s;
-      margin-left: 8px;
-      outline: none;
+
+  /* Center row (title/message) */
+    .top-bar-row.center {
+    justify-content: center;
+    margin-bottom: 2px;
     }
-    .back-circle-btn:active {
-      background: #b5e2fa;
+    .top-bar .center {
+    flex: 1 1 auto;
+    text-align: center;
+    font-size: 1em;
+    font-weight: 700;
+    letter-spacing: 2px;
+    opacity: 0.87;
+    padding: 0 10px;
+    width: 100%;
     }
-    .back-circle-btn img {
-      width: 22px;
-      height: 22px;
-      display: block;
+
+  /* Bottom row: back left, close right */
+    .top-bar-row.bottom {
+    justify-content: space-between;
+    margin-bottom: 0;
+    }
+    .top-bar .bottom-left {
+    display: flex;
+    align-items: center;
+    padding-left: 18px;
+    }
+    .top-bar .bottom-right {
+    display: flex;
+    align-items: center;
+    padding-right: 16px;
+    }
+    .back-circle-btn, .close-circle-btn {
+    width: 38px;
+    height: 38px;
+    background: #e3f0ff;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px #b5e2fa55;
+    cursor: pointer;
+    transition: background 0.18s;
+    margin-left: 0;
+    margin-right: 0;
+    }
+    .back-circle-btn img, .close-circle-btn img {
+    width: 20px;
+    height: 20px;
     }
     .carousel {
       margin: 18px 0 18px 0;
@@ -177,7 +206,6 @@
       background: #1e90ff;
       opacity: 1;
     }
-
     .profile-card {
       background: linear-gradient(135deg, #4bbcf7 20%, #16e2a1 100%);
       color: #fff;
@@ -453,19 +481,30 @@
 <body>
   <div class="phone-frame">
     <div class="top-bar">
-      <div class="top-bar-flex">
+      <div class="top-bar-row top">
         <div class="left" id="topBarTime">--:--</div>
-        <div class="center">Welcome to [KT-Green]</div>
         <div class="right">
-          <button class="back-circle-btn" onclick="handleBack()">
-            <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
-          </button>
           <span class="profile-circle" id="profileCircle">
-            <img src="https://i.imgur.com/0A5nqQx.png" alt="LINE Profile" id="profileImg"/>
+            <img src="..." alt="LINE Profile" id="profileImg"/>
           </span>
         </div>
       </div>
-    </div>
+        <div class="top-bar-row center">
+        <div class="center">Welcome to [KT-Green]</div>
+      </div>
+        <div class="top-bar-row bottom">
+          <div class="bottom-left">
+            <button class="back-circle-btn" onclick="handleBack()">
+              <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
+            </button>
+        </div>
+          <div class="bottom-right">
+            <button class="close-circle-btn" onclick="handleClose()">
+              <img src="https://i.postimg.cc/268jskDW/Frame-9-1.png" alt="Close" />
+            </button>
+          </div>
+        </div>
+      </div>
 
     <!-- Carousel -->
     <div class="carousel" id="mainCarousel"></div>
