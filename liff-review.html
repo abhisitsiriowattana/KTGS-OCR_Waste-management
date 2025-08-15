@@ -5,6 +5,7 @@
   <title>KTGS Go Green - KT-Green [Review]</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://static.line-scdn.net/liff/edge/versions/2.27.0/sdk.js"></script>
   <style>
     html, body {
       background: #25b8ff;
@@ -328,33 +329,25 @@
     </div>
   </div>
   <script>
-    // ------ Configuration ------
+    // --- Configuration ---
+    const LIFF_ID = "2007896777-Gq1RQ1oE"; // ตรงกับ LINE Developers
     const SHEET_ID = '1TEvqOkLMHOPiJRY4gMjlCI4Hetf3wixa9GyssDB0u6M';
     const ID_SHEET = 'IDworksheet';
     const DATA_SHEET = 'data';
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzyFGNW06_ky5ZvmKHMcGGbLbuEpxgeLdqaR1665JRKnOoksXKxNav-ez3PbNBFFt6HxA/exec'; // Replace with your GAS endpoint
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzyFGNW06_ky5ZvmKHMcGGbLbuEpxgeLdqaR1665JRKnOoksXKxNav-ez3PbNBFFt6HxA/exec';
     const DRIVE_FOLDER_ID = '1WcFtoXY_9p25XyVx15LRf48fDndvTEWN';
 
-    // ------ Data Model ------
+    // --- Data Model ---
     let reviewData = {
-      image: "", // base64 or blob url
-      imageFile: null, // File object
-      weight: "10.4",
-      category: "Recyclable",
-      branch: "Sukhumvit",
-      date: "01/6/2025",
-      time: "23:59:50",
-      remark: "Notification",
-      remarkError: "",
-      userId: "",
-      empInfo: null, // employee info object
+      image: "", imageFile: null, weight: "10.4", category: "Recyclable", branch: "Sukhumvit", date: "01/6/2025",
+      time: "23:59:50", remark: "Notification", remarkError: "", userId: "", empInfo: null
     };
 
-    // ------ Utilities ------
     function hasErrorRemark(errorMsg) {
       if (!errorMsg) return false;
       const keywords = [
-        "❌ตรวจสอบพบการถ่ายภาพมัว‼️", "❌ตรวจสอบพบการถ่ายภาพไม่ชัด‼️", "❌ตรวจสอบพบการสั่นของภาพถ่าย‼️", "❌ตรวจสอบพบภาพซ้ำจากการบันทึกก่อนหน้านี้‼️", "❌blur‼️", "❌duplicate‼️", "❌shake‼️", "❌not clear‼️"
+        "❌ตรวจสอบพบการถ่ายภาพมัว‼️", "❌ตรวจสอบพบการถ่ายภาพไม่ชัด‼️", "❌ตรวจสอบพบการสั่นของภาพถ่าย‼️",
+        "❌ตรวจสอบพบภาพซ้ำจากการบันทึกก่อนหน้านี้‼️", "❌blur‼️", "❌duplicate‼️", "❌shake‼️", "❌not clear‼️"
       ];
       return keywords.some(k => errorMsg.toLowerCase().includes(k));
     }
@@ -362,10 +355,7 @@
       const url = new URL(window.location.href);
       return url.searchParams.get(name) || "";
     }
-
-    // ------ Page Data Populate ------
     function populateReview() {
-      // รับค่าจาก query string
       if (getQueryParam('weight')) reviewData.weight = getQueryParam('weight');
       if (getQueryParam('category')) reviewData.category = getQueryParam('category');
       if (getQueryParam('branch')) reviewData.branch = getQueryParam('branch');
@@ -377,10 +367,7 @@
         document.getElementById('reviewImg').src = getQueryParam('img');
         reviewData.image = getQueryParam('img');
       }
-      if (getQueryParam('imgFile')) {
-        // for advanced cases, could parse file info here
-      }
-      // ---- แก้ไข category ให้ตรงเมนูที่กด ----
+      // Category mapping
       const cat = getQueryParam('category');
       let catDisplay = "Recyclable";
       if (cat) {
@@ -394,44 +381,32 @@
         reviewData.category = catDisplay;
       }
       document.getElementById('categoryValue').textContent = reviewData.category;
-
       document.getElementById('weightValue').value = reviewData.weight;
       document.getElementById('branchValue').textContent = reviewData.branch;
       document.getElementById('dateValue').textContent = reviewData.date;
       document.getElementById('timeValue').textContent = reviewData.time;
-
       // Remark logic
-      let showDot = false;
-      let remarkMsg = "";
-      let blockRecord = false;
+      let showDot = false, remarkMsg = "", blockRecord = false;
       if (reviewData.remarkError && hasErrorRemark(reviewData.remarkError)) {
-        remarkMsg = reviewData.remarkError;
-        showDot = true;
-        blockRecord = true;
+        remarkMsg = reviewData.remarkError; showDot = true; blockRecord = true;
       } else {
-        remarkMsg = reviewData.remark;
-        showDot = false;
-        blockRecord = false;
+        remarkMsg = reviewData.remark; showDot = false; blockRecord = false;
       }
       document.getElementById('remarkValue').textContent = remarkMsg;
       document.getElementById('remarkDot').className = "dot" + (showDot ? "" : " hide");
       document.getElementById('recordBtn').disabled = blockRecord;
     }
 
-    // ------ EMPLOYEE DATA ------
     async function getEmpInfo() {
-      // Find userId (from LIFF or query param)
       let lineUserId = getQueryParam('lineUserId') || "";
       if (!lineUserId && window.liff) {
         try {
-          if (!liff.isInitialized) await liff.init();
+          if (!liff.isInitialized) await liff.init({ liffId: LIFF_ID });
           const profile = await liff.getProfile();
           lineUserId = profile.userId;
         } catch (err) {}
       }
       reviewData.userId = lineUserId;
-
-      // Query GAS API to get employee info (IDworksheet)
       if (!lineUserId) return null;
       try {
         const url = `${GAS_URL}?action=getUserProfile&lineUserId=${encodeURIComponent(lineUserId)}`;
@@ -445,76 +420,32 @@
       return null;
     }
 
-    // ------ IMAGE UPLOAD ------
     async function uploadImageToDrive(base64Data) {
-      // Call GAS to upload base64 to Drive folder, get URL
-      // You must have a deployed GAS endpoint to handle this
       try {
-        const payload = {
-          action: "uploadImage",
-          folderId: DRIVE_FOLDER_ID,
-          imageData: base64Data
-        };
-        const res = await fetch(GAS_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+        const payload = { action: "uploadImage", folderId: DRIVE_FOLDER_ID, imageData: base64Data };
+        const res = await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
         const data = await res.json();
         if (data && data.status === "ok" && data.url) return data.url;
       } catch (e) {}
       return "";
     }
 
-    // ------ DATA SUBMIT ------
     async function handleRecord() {
-      // 1. Get Employee Data
       let empInfo = reviewData.empInfo;
       if (!empInfo) empInfo = await getEmpInfo();
-
-      // 2. Upload image and get the url
       let imageUrl = "";
-      if (reviewData.image && reviewData.image.startsWith("data:")) {
-        imageUrl = await uploadImageToDrive(reviewData.image);
-      } else if (reviewData.image) {
-        imageUrl = reviewData.image;
-      }
-
-      // 3. Prepare data for the row (order as in your Sheet)
+      if (reviewData.image && reviewData.image.startsWith("data:")) imageUrl = await uploadImageToDrive(reviewData.image);
+      else if (reviewData.image) imageUrl = reviewData.image;
       const dataRow = {
-        empId: empInfo?.X || "",  // เลขประจำตัว
-        prefix: empInfo?.B || "", // คำนำหน้าชื่อสามัญ
-        name: empInfo?.C || "",   // ชื่อ
-        surname: empInfo?.E || "",// นามสกุล
-        position: empInfo?.I || "", // ตำแหน่งปัจจุบัน
-        orgCode: empInfo?.F || "", // รหัสหน่วยงานสังกัด
-        org: empInfo?.K || "",     // หน่วยงานสังกัด
-        mainOrg: empInfo?.M || "", // หน่วยงานหลัก
-        workOrg: empInfo?.L || "", // หน่วยงานที่ปฏิบัติงาน
-        activityCode: empInfo?.O || "", // รหัสกิจกรรม
-        activityName: empInfo?.P || "", // ชื่อกิจกรรม
-        place: empInfo?.Q || "",        // ชื่อสถานที่ปฏิบัติงาน
-        weight: reviewData.weight || "",
-        category: reviewData.category || "",
-        branch: reviewData.branch || "",
-        date: reviewData.date || "",
-        time: reviewData.time || "",
-        imageUrl: imageUrl
+        empId: empInfo?.X || "", prefix: empInfo?.B || "", name: empInfo?.C || "", surname: empInfo?.E || "",
+        position: empInfo?.I || "", orgCode: empInfo?.F || "", org: empInfo?.K || "", mainOrg: empInfo?.M || "",
+        workOrg: empInfo?.L || "", activityCode: empInfo?.O || "", activityName: empInfo?.P || "", place: empInfo?.Q || "",
+        weight: reviewData.weight || "", category: reviewData.category || "", branch: reviewData.branch || "",
+        date: reviewData.date || "", time: reviewData.time || "", imageUrl: imageUrl
       };
-
-      // 4. ส่งข้อมูลไปบันทึกที่ Sheet (data)
       try {
-        const payload = {
-          action: "appendRow",
-          sheetId: SHEET_ID,
-          sheetName: DATA_SHEET,
-          data: dataRow
-        };
-        const res = await fetch(GAS_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+        const payload = { action: "appendRow", sheetId: SHEET_ID, sheetName: DATA_SHEET, data: dataRow };
+        const res = await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
         const result = await res.json();
         if (result && result.status === "ok") {
           alert("✅ทำการบันทึกข้อมูล 🗑️ สำเร็จ✅");
@@ -527,70 +458,61 @@
       }
     }
 
-    // ------ Inline Edit Weight ------
-    document.getElementById('editWeightBtn').onclick = function() {
-      const input = document.getElementById('weightValue');
-      input.readOnly = false;
-      input.focus();
-      input.select();
-      input.style.background = "#fff";
-      input.style.border = "1.5px solid #25b8ff";
-      input.addEventListener('blur', function restore() {
-        input.readOnly = true;
-        input.style.background = "#daf1ff";
-        input.style.border = "none";
-        input.removeEventListener('blur', restore);
-        reviewData.weight = input.value;
-      });
-    };
+    async function initLiff() {
+      try { await liff.init({ liffId: LIFF_ID }); }
+      catch (e) { alert("LIFF init failed: " + e.message); }
+    }
 
-    // ------ Inline Edit Remark ------
-    document.getElementById('remarkStatic').onclick = function() {
-      document.getElementById('remarkStatic').style.display = 'none';
-      const input = document.getElementById('remarkInput');
-      input.style.display = 'block';
-      input.value = reviewData.remarkError || reviewData.remark;
-      input.focus();
-      input.select();
-      input.onblur = function() {
-        input.style.display = 'none';
-        reviewData.remark = input.value || "Notification";
-        let showDot = hasErrorRemark(reviewData.remark);
-        document.getElementById('remarkValue').textContent = reviewData.remark;
-        document.getElementById('remarkDot').className = "dot" + (showDot ? "" : " hide");
-        document.getElementById('remarkStatic').style.display = '';
-        document.getElementById('recordBtn').disabled = showDot;
-      };
-      input.onkeydown = function(e) {
-        if (e.key === 'Enter') {
-          input.blur();
-        }
-      };
-    };
-
-    // ------ Retake Button ------
-    document.getElementById('retakeBtn').onclick = function() {
-      window.location.href = "liff-camera.html";
-    };
-
-    // ------ Back Button ------
-    document.getElementById('backBtn').onclick = function() {
-      window.location.href = "liff-camera.html";
-    };
-
-    // ------ Record Button ------
-    document.getElementById('recordBtn').onclick = async function() {
-      document.getElementById('recordBtn').disabled = true;
-      await handleRecord();
-      document.getElementById('recordBtn').disabled = false;
-    };
-
-    // ------ Init ------
-    (async function(){
-      // Try to get emp info in advance for speed
+    document.addEventListener('DOMContentLoaded', async function() {
+      await initLiff();
       await getEmpInfo();
       populateReview();
-    })();
+
+      document.getElementById('editWeightBtn').onclick = function() {
+        const input = document.getElementById('weightValue');
+        input.readOnly = false; input.focus(); input.select();
+        input.style.background = "#fff";
+        input.style.border = "1.5px solid #25b8ff";
+        input.addEventListener('blur', function restore() {
+          input.readOnly = true;
+          input.style.background = "#daf1ff";
+          input.style.border = "none";
+          input.removeEventListener('blur', restore);
+          reviewData.weight = input.value;
+        });
+      };
+
+      document.getElementById('remarkStatic').onclick = function() {
+        document.getElementById('remarkStatic').style.display = 'none';
+        const input = document.getElementById('remarkInput');
+        input.style.display = 'block';
+        input.value = reviewData.remarkError || reviewData.remark;
+        input.focus();
+        input.select();
+        input.onblur = function() {
+          input.style.display = 'none';
+          reviewData.remark = input.value || "Notification";
+          let showDot = hasErrorRemark(reviewData.remark);
+          document.getElementById('remarkValue').textContent = reviewData.remark;
+          document.getElementById('remarkDot').className = "dot" + (showDot ? "" : " hide");
+          document.getElementById('remarkStatic').style.display = '';
+          document.getElementById('recordBtn').disabled = showDot;
+        };
+        input.onkeydown = function(e) { if (e.key === 'Enter') input.blur(); };
+      };
+
+      document.getElementById('retakeBtn').onclick = function() {
+        window.location.href = "liff-camera.html";
+      };
+      document.getElementById('backBtn').onclick = function() {
+        window.location.href = "liff-camera.html";
+      };
+      document.getElementById('recordBtn').onclick = async function() {
+        document.getElementById('recordBtn').disabled = true;
+        await handleRecord();
+        document.getElementById('recordBtn').disabled = false;
+      };
+    });
   </script>
 </body>
 </html>
