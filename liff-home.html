@@ -588,14 +588,8 @@
     async function checkLiffLoginAndProfile() {
       try {
         await liff.init({ liffId: LIFF_ID });
-        if (!liff.isInClient()) {
-          // รองรับการเปิดตรงจาก Rich Menu หรือ Browser
-          if (!liff.isLoggedIn()) {
-            liff.login({ redirectUri: window.location.href });
-            return false;
-          }
-        } else if (!liff.isLoggedIn()) {
-          liff.login();
+        if (!liff.isLoggedIn()) {
+          liff.login({ redirectUri: window.location.href });
           return false;
         }
         // ดึงโปรไฟล์
@@ -616,12 +610,6 @@
         return false;
       }
     }
-    document.addEventListener('DOMContentLoaded', async () => {
-      await checkLiffLoginAndProfile(); // โหลดรูป LINE + onclick profile
-      renderMainCarousel();
-      renderSectionCarousel();
-      loadProfileCard();
-    });
 
     // --- Carousel data (banner) ---
     const banners = [
@@ -698,12 +686,13 @@
     }
 
     // Close button - ออกจาก liff-camera.html
-  function handleClose() {
-    if (window.liff && liff.isInClient && liff.isInClient()) {
-    liff.closeWindow();
-    } else {
-    alert("กรุณาเปิดผ่านแอป LINE เพื่อปิดหน้าต่าง");
-  }
+    function handleClose() {
+      if (window.liff && liff.isInClient && liff.isInClient()) {
+        liff.closeWindow();
+      } else {
+        alert("กรุณาเปิดผ่านแอป LINE เพื่อปิดหน้าต่าง");
+      }
+    }
 
     // --- Profile Card Data from Google Sheet ---
     async function loadProfileCard() {
@@ -741,6 +730,14 @@
         }
       } catch (e) {}
     }
+
+    // --- DOMContentLoaded ---
+      document.addEventListener('DOMContentLoaded', async () => {
+      await checkLiffLoginAndProfile();
+      renderMainCarousel();
+      renderSectionCarousel();
+      await loadProfileCard();
+    });
   </script>
 </body>
 </html>
