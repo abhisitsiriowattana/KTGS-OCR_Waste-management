@@ -491,34 +491,36 @@
     };
 
     // Waste card click: เปิดกล้องหลังอัตโนมัติ
-    function openCamera() {
+    function openCamera(category) {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.capture = 'environment'; // เปิดกล้องหลัง
+      input.capture = 'environment';
       input.style.display = 'none';
 
       input.onchange = function () {
-        const file = input.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
+      const file = input.files[0];
+      if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
           // เก็บรูปภาพไว้ใน sessionStorage
           sessionStorage.setItem('capturedImage', e.target.result);
-          // เปิดหน้า preview.html
-          window.location.href = 'preview.html';
+          // เปิดหน้า liff-review.html
+          window.location.href =
+          'liff-review.html?category=' + encodeURIComponent(category) +
+          '&img=' + encodeURIComponent(e.target.result);
           };
-          reader.readAsDataURL(file); // อ่านเป็น base64
+          reader.readAsDataURL(file);
           }
           document.body.removeChild(input);
           };
           document.body.appendChild(input);
           input.click();
     }
-    document.getElementById('cardFood').onclick = openCamera;
-    document.getElementById('cardRecycle').onclick = openCamera;
-    document.getElementById('cardGarbage').onclick = openCamera;
-    document.getElementById('cardHazardous').onclick = openCamera;
+    document.getElementById('cardFood').onclick = function() { openCamera('food'); };
+    document.getElementById('cardRecycle').onclick = function() { openCamera('recycle'); };
+    document.getElementById('cardGarbage').onclick = function() { openCamera('garbage'); };
+    document.getElementById('cardHazardous').onclick = function() { openCamera('hazard'); };
   </script>
 </body>
 </html>
