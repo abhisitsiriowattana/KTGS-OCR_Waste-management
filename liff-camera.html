@@ -55,7 +55,7 @@
     margin-bottom: 2px;
     }
   
-  /* Top row */
+   /* Top row */
     .top-bar-row.top {
     justify-content: space-between;
     margin-bottom: 0;
@@ -78,7 +78,7 @@
     flex: 0 0 auto;
     }
 
-  /* Center row (title/message) */
+   /* Center row (title/message) */
     .top-bar-row.center {
     display: flex;
     justify-content: center;
@@ -97,7 +97,7 @@
     width: 100%;
     }
 
-  /* Bottom row: back left, close right */
+   /* Bottom row: back left, close right */
     .top-bar-row.bottom {
     justify-content: space-between;
     margin-bottom: 0;
@@ -363,63 +363,54 @@
         <div class="left" id="topBarTime">--:--</div>
         <div class="right">
           <span class="profile-circle" id="profileCircle">
-            <img src="..." alt="LINE Profile" id="profileImg"/>
+            <img src="https://i.postimg.cc/yYx2r6wF/profile-2.png" alt="LINE Profile" id="profileImg"/>
           </span>
         </div>
       </div>
-        <div class="top-bar-row center">
-       <div class="center">Welcome to [KT-Green]<br>"Waste Data Recording"</div>
-       </div>
-        <div class="top-bar-row bottom">
-          <div class="bottom-left">
-            <button class="back-circle-btn" onclick="handleBack()">
-              <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
-            </button>
+      <div class="top-bar-row center">
+        <div class="center">Welcome to [KT-Green]<br>"Waste Data Recording"</div>
+      </div>
+      <div class="top-bar-row bottom">
+        <div class="bottom-left">
+          <button class="back-circle-btn" id="backBtn">
+            <img src="https://i.postimg.cc/3xZsp2cY/bx-back.png" alt="Back" />
+          </button>
         </div>
-          <div class="bottom-right">
-            <button class="close-circle-btn" onclick="handleClose()">
-              <img src="https://i.postimg.cc/268jskDW/Frame-9-1.png" alt="Close" />
-            </button>
-          </div>
+        <div class="bottom-right">
+          <button class="close-circle-btn" id="closeBtn">
+            <img src="https://i.postimg.cc/268jskDW/Frame-9-1.png" alt="Close" />
+          </button>
         </div>
       </div>
+    </div>
     <div class="main-menu">
-      <button class="main-menu-btn" id="btnTips">
-        <span class="icon">💡</span>
-        Tips
-      </button>
-      <button class="main-menu-btn" id="btnEvents">
-        <span class="icon">📅</span>
-        Events
-      </button>
-      <button class="main-menu-btn" id="btnSchedule">
-        <span class="icon">🕒</span>
-        Schedule
-      </button>
+      <button class="main-menu-btn" id="btnTips"><span class="icon">💡</span>Tips</button>
+      <button class="main-menu-btn" id="btnEvents"><span class="icon">📅</span>Events</button>
+      <button class="main-menu-btn" id="btnSchedule"><span class="icon">🕒</span>Schedule</button>
     </div>
     <!-- Food Waste - Image right, Label left -->
     <div class="waste-card img-right" id="cardFood">
       <img class="waste-img" src="https://i.postimg.cc/Rh8MJyDb/b91866f45c3ed3b664d7612b3e541ce479f46302.jpg" alt="Food Waste">
       <span class="waste-label green-hover">Food<br>Waste</span>
     </div>
-    <!-- Recyclable - Image left, Label right -->
     <div class="waste-card img-left" id="cardRecycle">
       <img class="waste-img" src="https://i.postimg.cc/5tHD6jV1/86104ba00143caf8c75e7e00a20ad007d0916879.jpg" alt="Recyclable">
       <span class="waste-label yellow-hover">Recyclable</span>
     </div>
-    <!-- Garbage - Image right, Label left -->
     <div class="waste-card img-right" id="cardGarbage">
       <img class="waste-img" src="https://i.postimg.cc/J73vy99y/025cc96c74dcd107980ba264466058daee8eb932.jpg" alt="Garbage">
       <span class="waste-label blue-hover">Garbage</span>
     </div>
-    <!-- Hazardous Waste - Image left, Label right -->
     <div class="waste-card img-left" id="cardHazardous">
       <img class="waste-img" src="https://i.postimg.cc/zBrp8fDx/d9a3aab1ae3ec3444cd53d629f00922debf36e76.jpg" alt="Hazardous Waste">
       <span class="waste-label red-hover">Hazardous<br>Waste</span>
     </div>
   </div>
   <script>
-    // Set header time
+   // ==== CONFIG ====
+    const LIFF_ID = "2007721551-Bk2qDAoo"; // ใส่ liffId ที่ได้จาก LINE Developers
+
+   // Set header time
     function updateTime() {
       const pad = n => String(n).padStart(2, "0");
       const d = new Date();
@@ -428,99 +419,85 @@
     updateTime();
     setInterval(updateTime, 30000);
 
-    // Back button - ไปหน้า liff-home.html
-    async function handleBack() {
-    try {
-    if (window.liff && typeof liff.init === "function" && !liff.isInitialized) {
-      await liff.init();
-    }
-    if (window.liff && liff.isInClient()) {
-      liff.navigateTo({ url: 'liff-home.html' }).catch(err => {
-        console.error('liff.navigateTo error:', err);
-        window.location.href = 'liff-home.html';
-      });
-    } else {
-      window.location.href = 'liff-home.html';
-    }
-    } catch (e) {
-    window.location.href = 'liff-home.html';
-    }
-  }
+    document.addEventListener('DOMContentLoaded', () => {
 
-  // Close button - ออกจาก liff-camera.html
-  function handleClose() {
-  if (window.liff && liff.isInClient && liff.isInClient()) {
-    liff.closeWindow();
-  } else {
-    alert("กรุณาเปิดผ่านแอป LINE เพื่อปิดหน้าต่าง");
-  }
-  }
+   // --- LIFF Profile ---
+      async function initLiffAndProfile() {
+        try {
+          await liff.init({ liffId: LIFF_ID });
+          if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+          }
+          const profile = await liff.getProfile();
+          if (profile.pictureUrl) {
+            document.getElementById('profileImg').src = profile.pictureUrl;
+          }
+        } catch (e) {
+          console.error("LIFF error:", e);
+        }
+      }
+      initLiffAndProfile();
 
-    // Profile load (LIFF)
-    async function loadProfile() {
-    try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-    const profile = await liff.getProfile();
-    if (profile.pictureUrl) {
-      document.getElementById('profileImg').src = profile.pictureUrl;
-    }
-  } catch (e) {
-    console.error('LIFF error:', e);
-    }
-  }
+   // --- Back/Close buttons ---
+      document.getElementById('backBtn').onclick = async function() {
+        try {
+          if (window.liff && liff.isInClient && liff.isInClient()) {
+            liff.navigateTo({ url: 'liff-home.html' });
+          } else {
+            window.location.href = 'liff-home.html';
+          }
+        } catch (e) {
+          window.location.href = 'liff-home.html';
+        }
+      };
+      document.getElementById('closeBtn').onclick = function() {
+        if (window.liff && liff.isInClient && liff.isInClient()) {
+          liff.closeWindow();
+        } else {
+          alert("กรุณาเปิดผ่านแอป LINE เพื่อปิดหน้าต่าง");
+        }
+      };
 
-  document.addEventListener('DOMContentLoaded', () => {
-  if (window.liff) {
-    loadProfile();
-  }
-  });
+   // --- Menu buttons ---
+      document.getElementById('btnSchedule').onclick = () => alert('กำลังพัฒนาเมนู Schedule');
+      document.getElementById('btnEvents').onclick = () => alert('กำลังพัฒนาเมนู Events');
+      document.getElementById('btnTips').onclick = () => alert('กำลังพัฒนาเมนู Tips');
 
-    // Menu buttons (replace with your logic)
-    document.getElementById('btnSchedule').onclick = function() {
-      alert('กำลังพัฒนาเมนู Schedule');
-    };
-    document.getElementById('btnEvents').onclick = function() {
-      alert('กำลังพัฒนาเมนู Events');
-    };
-    document.getElementById('btnTips').onclick = function() {
-      alert('กำลังพัฒนาเมนู Tips');
-    };
+   // --- Waste card click: เปิดกล้องหลังอัตโนมัติ ---
+      function openCamera(category) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment';
+        input.style.display = 'none';
 
-    // Waste card click: เปิดกล้องหลังอัตโนมัติ
-    function openCamera(category) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.capture = 'environment';
-      input.style.display = 'none';
-
-      input.onchange = function () {
-      const file = input.files[0];
-      if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-          // เก็บรูปภาพไว้ใน sessionStorage
-          sessionStorage.setItem('capturedImage', e.target.result);
-          // เปิดหน้า liff-review.html
-          window.location.href =
-          'liff-review.html?category=' + encodeURIComponent(category) +
-          '&img=' + encodeURIComponent(e.target.result);
-          };
-          reader.readAsDataURL(file);
+        input.onchange = function () {
+          const file = input.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              window.location.href =
+                'liff-review.html?category=' + encodeURIComponent(category) +
+                '&img=' + encodeURIComponent(e.target.result);
+            };
+            reader.readAsDataURL(file);
           }
           document.body.removeChild(input);
-          };
-          document.body.appendChild(input);
-          input.click();
-    }
-    document.getElementById('cardFood').onclick = function() { openCamera('food'); };
-    document.getElementById('cardRecycle').onclick = function() { openCamera('recycle'); };
-    document.getElementById('cardGarbage').onclick = function() { openCamera('garbage'); };
-    document.getElementById('cardHazardous').onclick = function() { openCamera('hazard'); };
+        };
+        document.body.appendChild(input);
+        input.click();
+      }
+
+      if (document.getElementById('cardFood'))
+        document.getElementById('cardFood').onclick = () => openCamera('food');
+      if (document.getElementById('cardRecycle'))
+        document.getElementById('cardRecycle').onclick = () => openCamera('recycle');
+      if (document.getElementById('cardGarbage'))
+        document.getElementById('cardGarbage').onclick = () => openCamera('garbage');
+      if (document.getElementById('cardHazardous'))
+        document.getElementById('cardHazardous').onclick = () => openCamera('hazard');
+    });
   </script>
 </body>
 </html>
